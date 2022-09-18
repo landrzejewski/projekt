@@ -1,0 +1,23 @@
+### Utworzenie docker-compose.yml
+POST http://127.0.0.1:8000/test_03/ftp/docker-compose.yml
+Content-Type: application/octet-stream
+
+version: "3"
+services:
+  linux:
+    image: alpine
+    command: "cat /proc/cpuinfo"
+
+### EOF
+
+### Uruchomienie zadania
+GET http://127.0.0.1:8000/test_03/up
+
+### Wyłączenie kontenera
+GET http://127.0.0.1:8000/test_03/down
+
+### Pobranie logów
+GET http://127.0.0.1:8000/test_03/log
+
+### Czyszczenie
+GET http://127.0.0.1:8000/test_03/cleanup

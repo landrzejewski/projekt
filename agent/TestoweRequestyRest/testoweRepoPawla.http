@@ -1,0 +1,17 @@
+### Ustawienie credentials
+POST http://127.0.0.1:8000/testproject_02/gitcredentials
+Content-Type: application/json
+
+{
+  "username": "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",
+  "password": ""
+}
+
+### Pobranie repo
+POST http://127.0.0.1:8000/testproject_02/gitclone
+Content-Type: application/json
+
+{
+  "repositoryUrl": "https://github.com/java-dev-pro-project/task3.git",
+  "branch": "main"
+}

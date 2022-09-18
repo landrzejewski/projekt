@@ -1,0 +1,33 @@
+### Pobranie repo
+POST http://127.0.0.1:8000/testproject_01/git
+Content-Type: application/json
+
+{
+  "repositoryUrl": "https://github.com/baranosiu/testproject.git",
+  "branch": "master"
+}
+
+### Update (git pull)
+PUT http://127.0.0.1:8000/testproject_01/git
+
+### Wystartowanie Dockera
+GET http://127.0.0.1:8000/testproject_01/up
+
+### Pobranie logów
+GET http://127.0.0.1:8000/testproject_01/log
+
+### Wyłączenie Dockera
+GET http://127.0.0.1:8000/testproject_01/down
+
+### Czyszczenie voluminów i obrazów Dockera (pliki z repo i wynikowe zostają)
+GET http://127.0.0.1:8000/testproject_01/cleanup
+
+### Przykład pobierania pliku wyniku
+GET http://127.0.0.1:8000/testproject_01/ftp/out/wynik.txt
+
+### Przykład wysłania pliku
+POST http://127.0.0.1:8000/testproject_01/ftp/out/test.txt
+Content-Type: application/octet-stream
+
+Jakaś tam zawartość pliku testowego.
+### EOF
