@@ -13,6 +13,16 @@ import java.io.IOException;
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(value = IncorrectFileTypeException.class)
+    ResponseEntity<?> handleIOException(IncorrectFileTypeException ex) {
+
+        log.error(ex.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .build();
+    }
+
+
     @ExceptionHandler(value = IOException.class)
     ResponseEntity<String> handleIOException(IOException ex) {
 

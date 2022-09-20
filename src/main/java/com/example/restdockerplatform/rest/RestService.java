@@ -1,5 +1,7 @@
 package com.example.restdockerplatform.rest;
 
+import lombok.AllArgsConstructor;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,16 +14,22 @@ import java.io.IOException;
 
 
 @Service
+@AllArgsConstructor
 class RestService {
+
+
+    private FileService fileService;
+
 
     Resource getFile(String user, String project) throws IOException {
 
         // TODO get files from Git
-        // TODO prepare zip file
 
-        final String fileCode = FileUtil.getFileCode(user, project);
 
-        Resource resource = FileUtil.getFileAsResource(fileCode);
+        // prepare zip file
+        final String fileCodeName = fileService.zipFiles(user, project);
+
+        Resource resource = fileService.getFileAsResource(fileCodeName);
 
         return resource;
     }
@@ -29,12 +37,21 @@ class RestService {
 
     String saveFile(String user, String project, MultipartFile multipartFile) throws IOException {
 
-        final String fileCode = FileUtil.saveFile(user, project, multipartFile);
+        if (!fileService.verifyMultipartFileExtension(multipartFile)) {
+            throw new IncorrectFileTypeException("Incorrect file type");
+        }
 
-        // TODO unzip zip file in proper place
+        final String fileCodeName = fileService.saveFile(user, project, multipartFile);
+
+        // TODO test if its a .zip file
+
+        // unzip zip file in proper place
+        fileService.unzipFile(user, project);
+
+
         // TODO commit and push changes to Git repository
 
-        return fileCode;
+        return fileCodeName;
     }
 
 

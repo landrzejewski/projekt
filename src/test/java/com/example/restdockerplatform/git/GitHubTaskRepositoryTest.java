@@ -1,8 +1,10 @@
-import com.example.restdockerplatform.git.GitHubTaskRepository;
+package com.example.restdockerplatform.git;
 
 import org.junit.Test;
 
+
 public class GitHubTaskRepositoryTest {
+
 
     static final String WORK_DIR = "C:\\project_workspace";
     GitHubTaskRepository tr = new GitHubTaskRepository();
