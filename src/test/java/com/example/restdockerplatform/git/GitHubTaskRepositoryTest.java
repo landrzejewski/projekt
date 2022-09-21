@@ -7,7 +7,11 @@ public class GitHubTaskRepositoryTest {
 
 
     static final String WORK_DIR = "C:\\project_workspace";
-    GitHubTaskRepository tr = new GitHubTaskRepository();
+
+    static final String GIT_HUB_REPOSITORY_URL = "https://github.com/";
+    static final String GIT_HUB_USER = "java-dev-pro-project";
+    static final String GH_TOKEN = "";
+    GitHubTaskRepository tr = new GitHubTaskRepository(GIT_HUB_REPOSITORY_URL, GIT_HUB_USER, GH_TOKEN);
 
     @Test
     public void shouldListAllRepositories() {
