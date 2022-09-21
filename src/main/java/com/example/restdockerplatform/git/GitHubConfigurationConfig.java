@@ -14,7 +14,7 @@ public class GitHubConfigurationConfig {
     private final String gitHubToken;
 
 
-    public GitHubConfigurationConfig(@Value("${github.url}") String gitHubUrl,
+    GitHubConfigurationConfig(@Value("${github.url}") String gitHubUrl,
                                      @Value("${github.user}") String userName,
                                      @Value("${github.token}") String gitHubToken) {
         this.gitHubRepositoryUrl = gitHubUrl;
@@ -22,7 +22,7 @@ public class GitHubConfigurationConfig {
         this.gitHubToken = gitHubToken;
     }
 
-    public String getRepositoryURI() {
+    String getRepositoryURI() {
         return gitHubRepositoryUrl + URI_SEPARATOR + gitHubUser + URI_SEPARATOR;
     }
 }
