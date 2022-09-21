@@ -9,7 +9,10 @@ public class GitHubTaskRepositoryTest {
     static final String GIT_HUB_USER = "java-dev-pro-project";
     static final String GH_TOKEN = "";
     static final GitHubConfigurationConfig  gitHubConfigurationConfig = new GitHubConfigurationConfig(GIT_HUB_REPOSITORY_URL, GIT_HUB_USER, GH_TOKEN);
-    GitHubTaskRepository tr = new GitHubTaskRepository(gitHubConfigurationConfig, new GitHubCredentialsProvider(gitHubConfigurationConfig));
+    GitHubTaskRepository tr = new GitHubTaskRepository(
+            gitHubConfigurationConfig,
+            new GitHubCredentialsProvider(gitHubConfigurationConfig),
+            new GitHubUser(gitHubConfigurationConfig));
 
     @Test
     public void shouldListAllRepositories() {
@@ -19,7 +22,6 @@ public class GitHubTaskRepositoryTest {
     @Test
     public void shouldListAllTasksAvailableForUser() {
         String userName = "user_jan";
-
         tr.listUserTasks(userName).forEach(System.out::println);
     }
 
@@ -33,7 +35,7 @@ public class GitHubTaskRepositoryTest {
 
     @Test
     public void shouldCreateBranchForUserInTask() {
-        String userId = "user_piotr";
+        String userId = "user_adam";
         String taskId = "task3";
 
         tr.assignTaskToUser(userId, taskId, WORK_DIR);
@@ -41,7 +43,7 @@ public class GitHubTaskRepositoryTest {
 
     @Test
     public void shouldCommitAndPushUserChangesInBranch() {
-        String userId = "user_piotr";
+        String userId = "user_adam";
         String taskId = "task3";
 
         tr.saveTask(userId, taskId, WORK_DIR);

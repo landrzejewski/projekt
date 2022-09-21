@@ -1,5 +1,6 @@
 package com.example.restdockerplatform.git;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
@@ -20,37 +21,16 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class GitHubTaskRepository implements TaskRepository {
-
-    static final String URI_SEPARATOR = "/";
-
     private final GitHubConfigurationConfig configurationConfig;
-
     private final CredentialsProvider credentialsProvider;
-
-    private final GitHub gitHub;
-    private final GHUser gitHubUser;
-
-    public GitHubTaskRepository(GitHubConfigurationConfig configurationConfig,
-                                GitHubCredentialsProvider passwordCredentialsProvider) {
-
-        this.configurationConfig = configurationConfig;
-        this.credentialsProvider = passwordCredentialsProvider;
-
-        try {
-            gitHub = GitHub.connectUsingOAuth(configurationConfig.getGitHubToken());
-            gitHubUser = gitHub.getUser(configurationConfig.getGitHubUser());
-        } catch (IOException ex) {
-            log.info("Error when connecting to repository");
-            throw new GitHubConnectionError(String.format("Could not connect to repository %s. Reason: %s",
-                    configurationConfig.getGitHubUser(), ex.getMessage()));
-        }
-    }
+    private final GitHubUser gitHubUser;
 
     @Override
     public List<String> listTasks() {
         log.info("Listing all tasks available");
-        var repositories = gitHubUser.listRepositories();
+        var repositories = gitHubUser.getGitHubUser().listRepositories();
         try {
             return repositories
                     .toList()
@@ -70,7 +50,7 @@ public class GitHubTaskRepository implements TaskRepository {
 
         List<String> branches = new ArrayList<>();
 
-        var repositories = gitHubUser.listRepositories().iterator();
+        var repositories = gitHubUser.getGitHubUser().listRepositories().iterator();
         while (repositories.hasNext()) {
             try {
                 var repository = repositories.next();
@@ -87,7 +67,7 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void getTask(String userId, String taskId, String workDir) {
-        var uri = configurationConfig.getGitHubRepositoryUrl() + URI_SEPARATOR + configurationConfig.getGitHubUser() + URI_SEPARATOR + taskId + ".git";
+        var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
         log.info("Cloning branch {} from repo {} to {}", taskId, uri, workDir);
@@ -112,7 +92,7 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void assignTaskToUser(String userId, String taskId, String workDir) {
-        var uri = configurationConfig.getGitHubRepositoryUrl() + URI_SEPARATOR + configurationConfig.getGitHubUser() + URI_SEPARATOR + taskId + ".git";
+        var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
         Git git;
