@@ -19,9 +19,9 @@ public class NodeStatus {
         NodeLoad nodeLoad = new NodeLoad();
         File workspace = WorkspaceUtils.getWorkspaceDirAsFile("");
         var sysinfo = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-        nodeLoad.setTotalMemorySize(sysinfo.getTotalMemorySize());
-        nodeLoad.setFreeMemorySize(sysinfo.getFreeMemorySize());
-        nodeLoad.setCpuLoad(sysinfo.getCpuLoad());
+        nodeLoad.setTotalMemorySize(sysinfo.getTotalPhysicalMemorySize());
+        nodeLoad.setFreeMemorySize(sysinfo.getFreePhysicalMemorySize());
+        nodeLoad.setCpuLoad(sysinfo.getSystemCpuLoad());
         nodeLoad.setAverageCpuLoad(sysinfo.getSystemLoadAverage());   // <- nie działa pod Windowsem
         nodeLoad.setNumberOfProcessors(sysinfo.getAvailableProcessors());
         nodeLoad.setTotalSwapSpace(sysinfo.getTotalSwapSpaceSize());

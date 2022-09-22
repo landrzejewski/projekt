@@ -3,10 +3,10 @@ package com.example.restdockerplatform.task;
 
 import lombok.*;
 
-import javax.persistence.*;
+//import javax.persistence.*;
 
-@Entity
-@Table(name = "tasks")
+//@Entity
+//@Table(name = "tasks")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,8 +14,8 @@ import javax.persistence.*;
 @ToString
 public class Task {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     private int Id;
 
     private String userName;
