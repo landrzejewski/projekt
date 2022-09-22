@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ApplicationScope
@@ -51,7 +52,7 @@ public class CommandExecutorService {
     private static List<String> createCommand(ShellCommand shellCommand) {
         List<String> command = new LinkedList<>();
         command.add(shellCommand.getCommand());
-        command.addAll(Arrays.stream(shellCommand.getArgs()).toList());
+        command.addAll(Arrays.stream(shellCommand.getArgs()).collect(Collectors.toList()));
         return command;
     }
 
