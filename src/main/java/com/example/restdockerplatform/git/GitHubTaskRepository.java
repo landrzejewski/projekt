@@ -1,15 +1,15 @@
 package com.example.restdockerplatform.git;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,34 +21,16 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class GitHubTaskRepository implements TaskRepository {
-
-
-    static final String GIT_HUB_REPOSITORY_URL = "https://github.com/";
-    static final String GIT_HUB_USER = "java-dev-pro-project";
-    static final String GH_TOKEN = "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";
-    static final String URI_SEPARATOR = "/";
-
-    static final UsernamePasswordCredentialsProvider CREDENTIALS_PROVIDER
-            = new UsernamePasswordCredentialsProvider(GH_TOKEN, "");
-
-    GitHub gitHub;
-    GHUser user;
-
-    @Autowired
-    public GitHubTaskRepository() {
-        try {
-            gitHub = GitHub.connectUsingOAuth(GH_TOKEN);
-            user = gitHub.getUser(GIT_HUB_USER);
-        } catch (IOException ex) {
-            log.info(String.format("Error: %s", ex.getMessage()));
-        }
-    }
+    private final GitHubConfigurationConfig configurationConfig;
+    private final CredentialsProvider credentialsProvider;
+    private final GitHubUser gitHubUser;
 
     @Override
     public List<String> listTasks() {
         log.info("Listing all tasks available");
-        var repositories = user.listRepositories();
+        var repositories = gitHubUser.getGitHubUser().listRepositories();
         try {
             return repositories
                     .toList()
@@ -56,7 +38,7 @@ public class GitHubTaskRepository implements TaskRepository {
                     .map(GHRepository::getName)
                     .collect(Collectors.toList());
         } catch (IOException ex) {
-            log.error("Could not get repositories for user: {}. Reason: {}", GIT_HUB_USER, ex.toString());
+            log.error("Could not get repositories for user: {}. Reason: {}", configurationConfig.getGitHubUser(), ex.toString());
             return new ArrayList<>();
         }
     }
@@ -68,7 +50,7 @@ public class GitHubTaskRepository implements TaskRepository {
 
         List<String> branches = new ArrayList<>();
 
-        var repositories = user.listRepositories().iterator();
+        var repositories = gitHubUser.getGitHubUser().listRepositories().iterator();
         while (repositories.hasNext()) {
             try {
                 var repository = repositories.next();
@@ -85,14 +67,14 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void getTask(String userId, String taskId, String workDir) {
-        var uri = GIT_HUB_REPOSITORY_URL + URI_SEPARATOR + GIT_HUB_USER + URI_SEPARATOR + taskId + ".git";
+        var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
         log.info("Cloning branch {} from repo {} to {}", taskId, uri, workDir);
 
         try {
             Git.cloneRepository()
-                    .setCredentialsProvider(CREDENTIALS_PROVIDER)
+                    .setCredentialsProvider(credentialsProvider)
                     .setURI(uri)
                     .setDirectory(path.toFile())
                     .setBranch(userId)
@@ -110,13 +92,13 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void assignTaskToUser(String userId, String taskId, String workDir) {
-        var uri = GIT_HUB_REPOSITORY_URL + URI_SEPARATOR + GIT_HUB_USER + URI_SEPARATOR + taskId + ".git";
+        var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
         Git git;
         try {
             git = Git.cloneRepository()
-                    .setCredentialsProvider(CREDENTIALS_PROVIDER)
+                    .setCredentialsProvider(credentialsProvider)
                     .setURI(uri)
                     .setDirectory(path.toFile())
                     .call();
@@ -174,7 +156,7 @@ public class GitHubTaskRepository implements TaskRepository {
         }
 
         try {
-            git.push().setCredentialsProvider(CREDENTIALS_PROVIDER).call();
+            git.push().setCredentialsProvider(credentialsProvider).call();
         } catch (GitAPIException ex) {
             log.error("Failed to push. Reason: {}", ex.toString());
         }
