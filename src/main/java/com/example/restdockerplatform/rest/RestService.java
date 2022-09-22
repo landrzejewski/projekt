@@ -1,5 +1,6 @@
 package com.example.restdockerplatform.rest;
 
+import com.example.restdockerplatform.git.TaskRepository;
 import lombok.AllArgsConstructor;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.springframework.core.io.Resource;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @Service
@@ -19,6 +21,7 @@ class RestService {
 
 
     private FileService fileService;
+    private final TaskRepository taskRepository;
 
 
     Resource getFile(String user, String project) throws IOException {
@@ -52,6 +55,10 @@ class RestService {
         // TODO commit and push changes to Git repository
 
         return fileCodeName;
+    }
+
+    List<String> getUserTasks(String user) {
+        return taskRepository.listUserTasks(user);
     }
 
 

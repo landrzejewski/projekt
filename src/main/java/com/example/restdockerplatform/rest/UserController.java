@@ -32,10 +32,11 @@ public class UserController {
     @GetMapping("/{user}")
     List<String> getAllTasksForUser(@PathVariable final String user) {
 
-        // TODO return all repositories where user has own branch
-        //     GET zadania użytkownika - projekty z branchem uzytkownika
         log.info(" -> getAllTasksForUser, user = {}", user);
-        return Collections.emptyList();
+        var userTasks = restService.getUserTasks(user);
+        log.info("Tasks available for {}: {}", user, userTasks);
+
+        return userTasks;
     }
 
     /**
