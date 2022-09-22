@@ -82,7 +82,7 @@ public class FileService {
         final String fileCode = FileUtil.getFileCode(user, project);
         final String fileCodeName = FileUtil.getFileCodeName(user, project);
 
-        final File directoryToZip = new File(USER_FILE_SPACE + File.separator + fileCode);
+        final File directoryToZip = new File(USER_FILE_SPACE + File.separator + user + File.separator + project);
         final String zipFileName = USER_ZIPFILE_SPACE + File.separator + fileCodeName;
 
         ZipUtil.zipDirectory(directoryToZip, zipFileName);
@@ -96,7 +96,7 @@ public class FileService {
         final String fileCodeName = FileUtil.getFileCodeName(user, project);
 
         final String zipFilePath = USER_ZIPFILE_SPACE + File.separator + fileCodeName;
-        final String destinationDirectory = USER_FILE_SPACE + File.separator + fileCode;
+        final String destinationDirectory = USER_FILE_SPACE + File.separator + user + File.separator + project;
 
         ZipUtil.unzip(zipFilePath, destinationDirectory);
     }
