@@ -34,7 +34,7 @@ public class Task {
     @Column(columnDefinition = "BLOB" )
     private byte[] bytesResult;
 
-    @Column(columnDefinition = "text")
+ //   @Column(columnDefinition = "text")
     private String textResult;
 
     @Column
