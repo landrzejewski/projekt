@@ -1,6 +1,5 @@
 package com.example.restdockerplatform.git;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
@@ -8,8 +7,7 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GHUser;
-import org.kohsuke.github.GitHub;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,11 +19,23 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class GitHubTaskRepository implements TaskRepository {
     private final GitHubConfigurationConfig configurationConfig;
     private final CredentialsProvider credentialsProvider;
     private final GitHubUser gitHubUser;
+
+    private final String workDirectory;
+
+    public GitHubTaskRepository(
+            GitHubConfigurationConfig configurationConfig,
+            CredentialsProvider credentialsProvider,
+            GitHubUser gitHubUser,
+            @Value("${user.file.space}") String workDirirectory) {
+        this.configurationConfig = configurationConfig;
+        this.credentialsProvider = credentialsProvider;
+        this.gitHubUser = gitHubUser;
+        this.workDirectory = workDirirectory;
+    }
 
     @Override
     public List<String> listTasks() {
@@ -67,6 +77,7 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void getTask(String userId, String taskId, String workDir) {
+
         var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
@@ -83,6 +94,13 @@ public class GitHubTaskRepository implements TaskRepository {
             log.error("Could not checkout branch {} from repository {} to location {}. Reason: {}",
                     userId, uri, workDir, ex.toString());
         }
+
+    }
+
+
+    @Override
+    public void getTask(String userId, String taskId) {
+        getTask(userId, taskId, workDirectory);
     }
 
     @Override
@@ -161,4 +179,9 @@ public class GitHubTaskRepository implements TaskRepository {
             log.error("Failed to push. Reason: {}", ex.toString());
         }
     }
+
+    public void saveTask(String userId, String taskId) {
+        saveTask(userId, taskId, workDirectory);
+    }
+
 }

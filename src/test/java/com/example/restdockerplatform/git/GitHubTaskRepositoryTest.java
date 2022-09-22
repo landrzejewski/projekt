@@ -12,7 +12,9 @@ public class GitHubTaskRepositoryTest {
     GitHubTaskRepository tr = new GitHubTaskRepository(
             gitHubConfigurationConfig,
             new GitHubCredentialsProvider(gitHubConfigurationConfig),
-            new GitHubUser(gitHubConfigurationConfig));
+            new GitHubUser(gitHubConfigurationConfig),
+            "C:\\project_workspace"
+            );
 
     @Test
     public void shouldListAllRepositories() {

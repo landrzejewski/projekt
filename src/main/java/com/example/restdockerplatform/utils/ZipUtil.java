@@ -22,6 +22,8 @@ import java.util.zip.ZipOutputStream;
 @Slf4j
 public final class ZipUtil {
 
+    private static String EXCLUDED_GIT_NAME = ".git";
+
     private static final int ZIP_FRAME_SIZE = 1024;
 
     private ZipUtil() {
@@ -58,34 +60,40 @@ public final class ZipUtil {
             while (ze != null) {
 
                 final String fileName = ze.getName();
-                final File newFile = new File(destinationDirectory + File.separator + fileName);
 
-                log.info(" -- unzip, unzipping file to: {}", newFile.getAbsolutePath());
+                // pomiń pliki git'a
+                if (!fileName.contains(EXCLUDED_GIT_NAME)) {
 
-                // create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
+                    final File newFile = new File(destinationDirectory + File.separator + fileName);
 
-                final FileOutputStream fos = new FileOutputStream(newFile);
+                    log.info(" -- unzip, unzipping file to: {}", newFile.getAbsolutePath());
 
-                boolean hasAnySize = false;
+                    // create directories for sub directories in zip
+                    new File(newFile.getParent()).mkdirs();
 
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
+                    final FileOutputStream fos = new FileOutputStream(newFile);
 
-                    hasAnySize = true;
-                    fos.write(buffer, 0, len);
-                }
+                    boolean hasAnySize = false;
 
-                fos.close();
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
 
-                // close this ZipEntry
-                zis.closeEntry();
+                        hasAnySize = true;
+                        fos.write(buffer, 0, len);
+                    }
+
+                    fos.close();
+
+                    // close this ZipEntry
+                    zis.closeEntry();
 
 
-                // delete directories and empty files
-                if (newFile.exists() && (newFile.isDirectory() || !hasAnySize)) {
-                    log.info(" -- unzip, deleting empty file or directory: {}", newFile.getAbsolutePath());
-                    newFile.delete();
+                    // delete directories and empty files
+                    if (newFile.exists() && (newFile.isDirectory() || !hasAnySize)) {
+                        log.info(" -- unzip, deleting empty file or directory: {}", newFile.getAbsolutePath());
+                        newFile.delete();
+                    }
+
                 }
 
                 ze = zis.getNextEntry();
@@ -130,19 +138,25 @@ public final class ZipUtil {
                 // only relative file path required for ZipEntry -> substring on absolute path
                 final String relativePath = filePath.substring(directory.getAbsolutePath().length() + 1);
 
-                ZipEntry ze = new ZipEntry(relativePath);
-                zos.putNextEntry(ze);
 
-                // read file and write to ZipOutputStream
-                FileInputStream fis = new FileInputStream(filePath);
-                byte[] buffer = new byte[ZIP_FRAME_SIZE];
-                int len;
-                while ((len = fis.read(buffer)) > 0) {
-                    zos.write(buffer, 0, len);
+                // pomiń pliki git'a
+                if (!relativePath.contains(EXCLUDED_GIT_NAME)) {
+
+                    ZipEntry ze = new ZipEntry(relativePath);
+                    zos.putNextEntry(ze);
+
+                    // read file and write to ZipOutputStream
+                    FileInputStream fis = new FileInputStream(filePath);
+                    byte[] buffer = new byte[ZIP_FRAME_SIZE];
+                    int len;
+                    while ((len = fis.read(buffer)) > 0) {
+                        zos.write(buffer, 0, len);
+                    }
+
+                    zos.closeEntry();
+                    fis.close();
                 }
 
-                zos.closeEntry();
-                fis.close();
             }
 
         } catch (IOException e) {

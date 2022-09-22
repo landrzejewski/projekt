@@ -34,10 +34,13 @@ public interface TaskRepository {
         Metoda służąca do tego, aby sklonować projekt taskName i zrobić checkout brancha taskId
      */
     void getTask(String userId, String taskId, String workDir);
+    void getTask(String userId, String taskId);
 
     /*
         Metoda służy do tego, aby umieścić danego task przypisany do użytkownika (tj branch
         o nazwie równej ID użytkownika w repozytorium zdalnym
      */
     void saveTask(String userId, String taskId, String workDir);
+
+    void saveTask(String userId, String taskId);
 }

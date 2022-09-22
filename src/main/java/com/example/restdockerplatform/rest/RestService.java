@@ -27,7 +27,7 @@ class RestService {
     Resource getFile(String user, String project) throws IOException {
 
         // TODO get files from Git
-
+        taskRepository.getTask(user, project);
 
         // prepare zip file
         final String fileCodeName = fileService.zipFiles(user, project);
@@ -53,11 +53,14 @@ class RestService {
 
 
         // TODO commit and push changes to Git repository
+        taskRepository.saveTask(user, project);
 
         return fileCodeName;
     }
 
+
     List<String> getUserTasks(String user) {
+
         return taskRepository.listUserTasks(user);
     }
 
