@@ -1,17 +1,20 @@
 package com.example.restdockerplatform.git;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.kohsuke.github.GHRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,23 +23,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class GitHubTaskRepository implements TaskRepository {
     private final GitHubConfigurationConfig configurationConfig;
     private final CredentialsProvider credentialsProvider;
     private final GitHubUser gitHubUser;
-
-    private final String workDirectory;
-
-    public GitHubTaskRepository(
-            GitHubConfigurationConfig configurationConfig,
-            CredentialsProvider credentialsProvider,
-            GitHubUser gitHubUser,
-            @Value("${user.file.space}") String workDirirectory) {
-        this.configurationConfig = configurationConfig;
-        this.credentialsProvider = credentialsProvider;
-        this.gitHubUser = gitHubUser;
-        this.workDirectory = workDirirectory;
-    }
 
     @Override
     public List<String> listTasks() {
@@ -78,35 +69,32 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void getTask(String userId, String taskId, String workDir) {
-
         var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
-        log.info("Cloning branch {} from repo {} to {}", taskId, uri, workDir);
-
-        try {
-            Git.cloneRepository()
-                    .setCredentialsProvider(credentialsProvider)
-                    .setURI(uri)
-                    .setDirectory(path.toFile())
-                    .setBranch(userId)
-                    .call();
-        } catch (GitAPIException ex) {
-            log.error("Could not checkout branch {} from repository {} to location {}. Reason: {}",
-                    userId, uri, workDir, ex.toString());
+        if (!listUserTasks(userId).contains(taskId)) {
+            log.info("Task {} not assigned to user {}", taskId, userId);
+            return;
         }
 
+        if (!repositoryExists(path)) {
+            cloneRepository(uri, null, path);
+        }
+        if (!repositoryOnBranch(userId, path)) {
+            checkoutBranch(path, userId);
+        } else {
+            pullChanges(path);
+        }
     }
-
 
     @Override
     public void getTask(String userId, String taskId) {
-        getTask(userId, taskId, workDirectory);
+        getTask(userId, taskId, configurationConfig.getWorkDirectory());
     }
 
     @Override
     public void createTask(String taskName, String dir) {
-
+        // TO BE REMOVED
     }
 
     @Override
@@ -114,26 +102,19 @@ public class GitHubTaskRepository implements TaskRepository {
         var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
         var path = Paths.get(workDir, userId, taskId);
 
-        Git git;
-        try {
-            git = Git.cloneRepository()
-                    .setCredentialsProvider(credentialsProvider)
-                    .setURI(uri)
-                    .setDirectory(path.toFile())
-                    .call();
-        } catch (GitAPIException ex) {
-            log.error("Could not clone repository {} to location {}. Reason: {}", uri, workDir, ex.toString());
+        if (listUserTasks(userId).contains(taskId)) {
+            log.info("Task {} already assigned to user {}", taskId, userId);
             return;
         }
 
-        try {
-            git.checkout()
-                    .setCreateBranch(true)
-                    .setName(userId)
-                    .call();
-        } catch (GitAPIException ex) {
-            log.error("Could not checkout branch {} in repository {} in location {}. Reason: {}",
-                    userId, uri, workDir, ex.toString());
+        if (!repositoryExists(path)) {
+            Git git = cloneRepository(uri, null, path);
+            checkoutBranch(path, userId);
+            try {
+                git.push().setCredentialsProvider(credentialsProvider).call();
+            } catch (GitAPIException ex) {
+                log.error("Failed to push. Reason: {}", ex.toString());
+            }
         }
     }
 
@@ -181,8 +162,63 @@ public class GitHubTaskRepository implements TaskRepository {
         }
     }
 
-    public void saveTask(String userId, String taskId) throws RepositoryNotFoundException {
-        saveTask(userId, taskId, workDirectory);
+
+    public void saveTask(String userId, String taskId) {
+        saveTask(userId, taskId, configurationConfig.getWorkDirectory());
     }
 
+    private void pullChanges(Path path) {
+        try {
+            Git git = Git.open(path.toFile());
+            git.pull().call();
+        } catch (IOException | GitAPIException ex) {
+            log.error("Could not pull changes to repository {}. Reason: {}", path, ex.toString());
+        }
+    }
+
+    private Git cloneRepository(String uri, String userId, Path path) {
+        try {
+            CloneCommand command = Git.cloneRepository()
+                    .setCredentialsProvider(credentialsProvider)
+                    .setURI(uri)
+                    .setDirectory(path.toFile());
+            if (userId != null) {
+                command.setBranch(userId);
+            }
+            return command.call();
+        } catch (GitAPIException ex) {
+            log.error("Could not clone and checkout branch {} from repository {} to location {}. Reason: {}",
+                    userId, uri, path, ex.toString());
+            throw new RuntimeException(String.format("Could not clone repository {}", uri));
+        }
+    }
+
+    private boolean repositoryExists(Path path) {
+        FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
+        return repositoryBuilder.findGitDir(path.toFile()).getGitDir() != null;
+    }
+
+    private boolean repositoryOnBranch(String userId, Path path) {
+        try {
+            Git git = Git.open(path.toFile());
+            git.fetch().call();
+            return userId.equals(git.getRepository().getBranch());
+        } catch (GitAPIException | IOException ex) {
+            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
+        }
+
+        return false;
+    }
+
+    private void checkoutBranch(Path path, String userId) {
+        try {
+            Git git = Git.open(path.toFile());
+            git.checkout()
+                    .setCreateBranch(true)
+                    .setName(userId)
+                    .call();
+        } catch (IOException | GitAPIException ex) {
+            log.error("Could not checkout branch {}. Reason: {}", userId, ex.toString());
+        }
+    }
 }
