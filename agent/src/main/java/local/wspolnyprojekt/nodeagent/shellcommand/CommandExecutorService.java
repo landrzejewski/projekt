@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.shellcommand;
 
-import local.wspolnyprojekt.nodeagent.common.ShellCommand;
+import local.wspolnyprojekt.nodeagentlib.common.ShellCommand;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +52,7 @@ public class CommandExecutorService {
     private static List<String> createCommand(ShellCommand shellCommand) {
         List<String> command = new LinkedList<>();
         command.add(shellCommand.getCommand());
+//        command.addAll(Arrays.stream(shellCommand.getArgs()).toList()); // JDK17
         command.addAll(Arrays.stream(shellCommand.getArgs()).collect(Collectors.toList()));
         return command;
     }

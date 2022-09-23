@@ -1,7 +1,7 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagent.common.RestEndpoints;
-import local.wspolnyprojekt.nodeagent.common.ShellCommand;
+import local.wspolnyprojekt.nodeagentlib.common.RestEndpoints;
+import local.wspolnyprojekt.nodeagentlib.common.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

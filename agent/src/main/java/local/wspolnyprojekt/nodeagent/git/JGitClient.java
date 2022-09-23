@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.git;
 
-import local.wspolnyprojekt.nodeagent.common.GitResource;
+import local.wspolnyprojekt.nodeagentlib.common.GitResource;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

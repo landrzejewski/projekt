@@ -6,7 +6,7 @@ version: "3"
 services:
   linux:
     image: alpine
-    command: "cat /proc/cpuinfo"
+    command: "date"
 
 ### EOF
 

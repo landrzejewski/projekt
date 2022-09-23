@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.docker;
 
-import local.wspolnyprojekt.nodeagent.common.ShellCommand;
+import local.wspolnyprojekt.nodeagentlib.common.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
