@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
+import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.TASKID_PATH_VARIABLE;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,12 +27,12 @@ public class GitApi {
     }
 
     @PostMapping(RestEndpoints.GIT_ENDPOINT)
-    void cloneGitRepository(@RequestBody GitResource gitResource, @PathVariable String taskid) throws GitAPIException {
+    void cloneGitRepository(@RequestBody GitResource gitResource, @PathVariable(name = TASKID_PATH_VARIABLE) String taskid) throws GitAPIException {
         gitClient.clone(gitResource, Configuration.getWorkspaceDir(taskid));
     }
 
     @PutMapping(RestEndpoints.GIT_ENDPOINT)
-    boolean pullAndCheckoutGitRepository(@PathVariable String taskid) throws GitAPIException, IOException {
+    boolean pullAndCheckoutGitRepository(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid) throws GitAPIException, IOException {
         return gitClient.pull(Configuration.getWorkspaceDir(taskid));
     }
 

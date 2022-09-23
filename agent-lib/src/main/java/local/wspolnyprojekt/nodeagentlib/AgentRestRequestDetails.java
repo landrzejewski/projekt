@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.*;
 
-@Slf4j
 public class AgentRestRequestDetails {
 
     /**
