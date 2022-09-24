@@ -1,12 +1,12 @@
-package local.wspolnyprojekt.nodeagentlib.common.requestcreator;
+package local.wspolnyprojekt.nodeagentlib;
 
-import local.wspolnyprojekt.nodeagentlib.common.RequestDetails;
+import local.wspolnyprojekt.nodeagentlib.dto.RequestDetails;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import static local.wspolnyprojekt.nodeagentlib.AgentRestRequestDetails.*;
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class AgentRestRequestDetailsSystemTest {
@@ -20,7 +20,7 @@ class AgentRestRequestDetailsSystemTest {
         RequestDetails requestDetails = getPingRequestDetails();
         assertThat(requestDetails.getRequestMethod()).isEqualTo(RequestMethod.GET);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
-        assertThat(requestDetails.getUriEndpoint()).isEqualTo(SYSTEM_PING);
+        assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.SYSTEM_PING);
     }
 
     @Test
@@ -28,6 +28,6 @@ class AgentRestRequestDetailsSystemTest {
         RequestDetails requestDetails = getSystemLoadRequestDetails();
         assertThat(requestDetails.getRequestMethod()).isEqualTo(RequestMethod.GET);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
-        assertThat(requestDetails.getUriEndpoint()).isEqualTo(SYSTEM_LOAD);
+        assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.SYSTEM_LOAD);
     }
 }

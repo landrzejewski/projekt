@@ -1,7 +1,7 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagentlib.common.RestEndpoints;
-import local.wspolnyprojekt.nodeagentlib.common.ShellCommand;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
+import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.TASKID_PATH_VARIABLE;
+import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASKID_PATH_VARIABLE;
 
 @Slf4j
 @RestController

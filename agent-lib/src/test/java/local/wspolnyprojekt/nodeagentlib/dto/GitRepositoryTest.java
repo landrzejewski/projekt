@@ -1,6 +1,6 @@
-package local.wspolnyprojekt.nodeagentlib.common.requestcreator;
+package local.wspolnyprojekt.nodeagentlib.dto;
 
-import local.wspolnyprojekt.nodeagentlib.common.GitResource;
+import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

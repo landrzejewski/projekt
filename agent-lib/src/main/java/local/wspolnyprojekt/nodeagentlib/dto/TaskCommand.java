@@ -1,4 +1,4 @@
-package local.wspolnyprojekt.nodeagentlib.common;
+package local.wspolnyprojekt.nodeagentlib.dto;
 
 public enum TaskCommand implements JsonString {
     TASK_COMMAND_START,

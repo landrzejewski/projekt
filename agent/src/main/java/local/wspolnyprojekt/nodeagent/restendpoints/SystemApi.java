@@ -1,7 +1,7 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagentlib.common.NodeLoad;
-import local.wspolnyprojekt.nodeagentlib.common.RestEndpoints;
+import local.wspolnyprojekt.nodeagentlib.dto.NodeLoad;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import local.wspolnyprojekt.nodeagent.serverstatus.NodeStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.shellcommand;
 
-import local.wspolnyprojekt.nodeagentlib.common.ShellCommand;
+import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

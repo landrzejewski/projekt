@@ -1,7 +1,7 @@
 package local.wspolnyprojekt.nodeagent.task;
 
-import local.wspolnyprojekt.nodeagentlib.common.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.common.GitResource;
+import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
+import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import local.wspolnyprojekt.nodeagent.statusbroadcast.StatusBroadcaster;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

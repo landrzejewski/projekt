@@ -1,13 +1,12 @@
 package local.wspolnyprojekt.nodeagentlib;
 
-import local.wspolnyprojekt.nodeagentlib.common.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.common.GitResource;
-import local.wspolnyprojekt.nodeagentlib.common.RequestDetails;
-import local.wspolnyprojekt.nodeagentlib.common.TaskCommand;
-import lombok.extern.slf4j.Slf4j;
+import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
+import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
+import local.wspolnyprojekt.nodeagentlib.dto.RequestDetails;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskCommand;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.*;
+import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.*;
 
 public class AgentRestRequestDetails {
 

@@ -1,4 +1,4 @@
-package local.wspolnyprojekt.nodeagentlib.common;
+package local.wspolnyprojekt.nodeagentlib.dto;
 
 public class RestEndpoints {
     public static final String FILENAME_PATH_VARIABLE = "filename";

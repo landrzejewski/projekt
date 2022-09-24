@@ -1,4 +1,4 @@
-package local.wspolnyprojekt.nodeagentlib.common;
+package local.wspolnyprojekt.nodeagentlib.dto;
 
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;

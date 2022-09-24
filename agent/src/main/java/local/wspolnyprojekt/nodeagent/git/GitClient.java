@@ -1,7 +1,7 @@
 package local.wspolnyprojekt.nodeagent.git;
 
-import local.wspolnyprojekt.nodeagentlib.common.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.common.GitResource;
+import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
+import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;

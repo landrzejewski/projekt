@@ -1,11 +1,11 @@
-package local.wspolnyprojekt.nodeagentlib.common.requestcreator;
+package local.wspolnyprojekt.nodeagentlib;
 
-import local.wspolnyprojekt.nodeagentlib.common.RequestDetails;
+import local.wspolnyprojekt.nodeagentlib.dto.RequestDetails;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.*;
 import static local.wspolnyprojekt.nodeagentlib.AgentRestRequestDetails.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -22,7 +22,7 @@ class AgentRestRequestDetailsFtpTest {
         RequestDetails requestDetails = getFtpGetFileRequestDetaild(file, taskId);
         assertThat(requestDetails.getRequestMethod()).isEqualTo(RequestMethod.GET);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
-        assertThat(requestDetails.getUriEndpoint()).isEqualTo(FTP_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + FILENAME_PATH_VARIABLE + "}", file));
+        assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.FTP_ENDPOINT.replace("{" + RestEndpoints.TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + RestEndpoints.FILENAME_PATH_VARIABLE + "}", file));
     }
 
     @Test
@@ -30,7 +30,7 @@ class AgentRestRequestDetailsFtpTest {
         RequestDetails requestDetails = getFtpPostFileRequestDetaild(file, taskId);
         assertThat(requestDetails.getRequestMethod()).isEqualTo(RequestMethod.POST);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
-        assertThat(requestDetails.getUriEndpoint()).isEqualTo(FTP_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + FILENAME_PATH_VARIABLE + "}", file));
+        assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.FTP_ENDPOINT.replace("{" + RestEndpoints.TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + RestEndpoints.FILENAME_PATH_VARIABLE + "}", file));
     }
 
     @Test
@@ -38,6 +38,6 @@ class AgentRestRequestDetailsFtpTest {
         RequestDetails requestDetails = getFtpDeleteFileRequestDetaild(file, taskId);
         assertThat(requestDetails.getRequestMethod()).isEqualTo(RequestMethod.DELETE);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
-        assertThat(requestDetails.getUriEndpoint()).isEqualTo(FTP_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + FILENAME_PATH_VARIABLE + "}", file));
+        assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.FTP_ENDPOINT.replace("{" + RestEndpoints.TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + RestEndpoints.FILENAME_PATH_VARIABLE + "}", file));
     }
 }

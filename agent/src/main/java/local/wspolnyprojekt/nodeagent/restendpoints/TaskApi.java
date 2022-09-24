@@ -1,8 +1,8 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
 import jdk.jshell.spi.ExecutionControl.NotImplementedException;
-import local.wspolnyprojekt.nodeagentlib.common.RestEndpoints;
-import local.wspolnyprojekt.nodeagentlib.common.TaskCommand;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskCommand;
 import local.wspolnyprojekt.nodeagent.docker.DockerService;
 import local.wspolnyprojekt.nodeagent.task.TaskStatus;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.FileNotFoundException;
 
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.TASKID_PATH_VARIABLE;
+import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASKID_PATH_VARIABLE;
 
 @Slf4j
 @RestController

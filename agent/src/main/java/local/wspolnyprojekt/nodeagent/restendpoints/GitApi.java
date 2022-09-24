@@ -1,9 +1,9 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
 import local.wspolnyprojekt.nodeagent.Configuration;
-import local.wspolnyprojekt.nodeagentlib.common.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.common.RestEndpoints;
-import local.wspolnyprojekt.nodeagentlib.common.GitResource;
+import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
+import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import local.wspolnyprojekt.nodeagent.git.GitClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.TASKID_PATH_VARIABLE;
+import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASKID_PATH_VARIABLE;
 
 @Slf4j
 @RestController

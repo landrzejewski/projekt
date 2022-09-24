@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagentlib.common.RestEndpoints;
+import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.FILENAME_PATH_VARIABLE;
-import static local.wspolnyprojekt.nodeagentlib.common.RestEndpoints.TASKID_PATH_VARIABLE;
+import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.FILENAME_PATH_VARIABLE;
+import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASKID_PATH_VARIABLE;
 
 @Slf4j
 @RestController

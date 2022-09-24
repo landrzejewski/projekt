@@ -1,4 +1,4 @@
-package local.wspolnyprojekt.nodeagentlib.common;
+package local.wspolnyprojekt.nodeagentlib.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
