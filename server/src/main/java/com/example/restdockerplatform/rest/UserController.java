@@ -1,6 +1,8 @@
 package com.example.restdockerplatform.rest;
 
 
+import com.example.restdockerplatform.node.LoadBalancer;
+import com.example.restdockerplatform.node.Node;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -27,6 +29,7 @@ import java.util.List;
 public class UserController {
 
     private final RestService restService;
+    private final LoadBalancer loadBalancer;
 
 
     @GetMapping("/{user}")
@@ -89,7 +92,7 @@ public class UserController {
     void executeUserProject(
             @PathVariable final String user,
             @PathVariable final String project) {
-
+        Node executionNode = loadBalancer.getNodeForTask();
         // TODO    POST zlecenie wykonania - wywołanie przetwarzania przez docker konkretnego zadania
         log.info(" -> executeUserProject, user = {}, project = {}", user, project);
     }
