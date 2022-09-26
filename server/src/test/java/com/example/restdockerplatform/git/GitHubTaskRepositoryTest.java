@@ -1,67 +1,130 @@
 package com.example.restdockerplatform.git;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Ref;
 import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
+import org.mockito.Mockito;
 
-import java.io.File;
-
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GitHubTaskRepositoryTest {
-    static final String WORK_DIR = "C:\\project_workspace";
-    static final String GIT_HUB_REPOSITORY_URL = "https://github.com/";
-    static final String GIT_HUB_USER = "java-dev-pro-project";
-    static final String GH_TOKEN = "";
-    static final GitHubConfigurationConfig  gitHubConfigurationConfig = new GitHubConfigurationConfig(
-            GIT_HUB_REPOSITORY_URL,
-            GIT_HUB_USER,
-            GH_TOKEN,
-            WORK_DIR);
-    GitHubTaskRepository tr = new GitHubTaskRepository(
-            gitHubConfigurationConfig,
-            new GitHubCredentialsProvider(gitHubConfigurationConfig),
-            new GitHubUser(gitHubConfigurationConfig)
-            );
 
     @Test
-    @Disabled
-    public void shouldCreateRepo() throws GitAPIException {
-        Git.cloneRepository()
-                .setURI("C:\\Users\\soker\\work\\testRepo")
-                .setDirectory(new File("C:\\Users\\soker\\work\\gitWorkDir"))
-                .setBranch("master").call().close();
+    public void shouldCloneUserBranchFromRepository() throws GitAPIException, IOException {
+        // given
+        String userId = "user_karol";
+        String taskId = "task3";
+        var helper = GitHubTestTaskHelper.init().withBranchForUser(userId);
+
+        Path expectedPath = Paths.get(helper.targetRepositoryPath, userId, taskId);
+
+        when(helper.getProjectContentProvider().listUserTasks(userId)).thenReturn(List.of(taskId));
+
+        // when
+        helper.getTestedTaskRepository().getTask(userId, taskId);
+
+        // then
+        Assertions.assertTrue(expectedPath.toFile().exists());
+        Assertions.assertTrue(helper.getRepositoryContentProvider().repositoryOnBranch(userId, expectedPath));
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .pullChanges(any());
     }
 
     @Test
-    @Disabled
-    public void shouldListAllRepositories() {
-        tr.listTasks().forEach(System.out::println);
+    public void whenRepositoryClonedAndBranchAlreadyCheckedOutShouldPull() throws GitAPIException, IOException {
+        // given
+        String userId = "user_karol";
+        String taskId = "task3";
+        var helper = GitHubTestTaskHelper.init().withBranchForUser(userId);
+
+        when(helper.getProjectContentProvider().listUserTasks(userId)).thenReturn(List.of(taskId));
+
+        // when
+        helper.getTestedTaskRepository().getTask(userId, taskId);
+        helper.getTestedTaskRepository().getTask(userId, taskId);
+
+        // then
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .cloneRepository(any(), any(), any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .checkoutBranch(any(), any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .pullChanges(any());
     }
 
     @Test
-    @Disabled
-    public void shouldListAllTasksAvailableForUser() {
-        String userName = "user_jan";
-        tr.listUserTasks(userName).forEach(System.out::println);
+    public void whenTaskNotAssignedToUserShouldNotClone() throws GitAPIException, IOException {
+        // given
+        String userId = "user_karol";
+        String taskId = "task3";
+        var helper = GitHubTestTaskHelper.init();
+
+        when(helper.getProjectContentProvider().listUserTasks(userId)).thenReturn(Collections.emptyList());
+
+        // when
+        helper.getTestedTaskRepository().getTask(userId, taskId);
+
+        // then
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .cloneRepository(any(), any(), any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .checkoutBranch(any(), any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .pullChanges(any());
+
     }
 
     @Test
-    @Disabled
-    public void shouldCloneUserBranchFromRepository() {
+    public void shouldAssignNewTaskToUser() throws GitAPIException, IOException {
+        // given
+        var helper = GitHubTestTaskHelper.init();
         String userId = "user_karol";
         String taskId = "task3";
 
-        tr.getTask(userId, taskId, WORK_DIR);
+        when(helper.getProjectContentProvider().listUserTasks(anyString())).thenReturn(Collections.emptyList());
+
+        // when
+        helper.getTestedTaskRepository().assignTaskToUser(userId, taskId, helper.getTargetRepositoryPath());
+
+        // then
+        var remoteBranches = helper.getRemoteRepository().branchList().call()
+                .stream().map(Ref::getName).collect(Collectors.toList());
+
+        assertThat(remoteBranches).contains("refs/heads/master");
+        assertThat(remoteBranches).contains("refs/heads/user_karol");
+        assertThat(remoteBranches).hasSize(2);
     }
 
     @Test
-    @Disabled
-    public void shouldCreateBranchForUserInTask() {
+    public void shouldNotAssignTaskToUserIfTaskAlreadyAssigned() throws GitAPIException, IOException {
+        // given
+        var helper = GitHubTestTaskHelper.init();
         String userId = "user_karol";
         String taskId = "task3";
 
-        tr.assignTaskToUser(userId, taskId, WORK_DIR);
+        when(helper.getProjectContentProvider().listUserTasks(anyString())).thenReturn(List.of(taskId));
+
+        // when
+        helper.getTestedTaskRepository().assignTaskToUser(userId, taskId, helper.getTargetRepositoryPath());
+
+        // then
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .cloneRepository(any(), any(), any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .checkoutBranch(any(), any());
     }
 
     @Test
@@ -70,6 +133,6 @@ public class GitHubTaskRepositoryTest {
         String userId = "user_karol";
         String taskId = "task3";
 
-        tr.saveTask(userId, taskId, WORK_DIR);
+        // TODO
     }
 }

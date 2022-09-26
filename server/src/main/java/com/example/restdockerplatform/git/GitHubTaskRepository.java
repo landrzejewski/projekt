@@ -27,49 +27,24 @@ import java.util.stream.Collectors;
 public class GitHubTaskRepository implements TaskRepository {
     private final GitHubConfigurationConfig configurationConfig;
     private final CredentialsProvider credentialsProvider;
-    private final GitHubUser gitHubUser;
+    private final ProjectContentProvider gitHubUser;
+
+    private final RepositoryContentProvider repositoryContentProvider;
+    private final RepositoryUriParser repositoryUriParser;
 
     @Override
     public List<String> listTasks() {
-        log.info("Listing all tasks available");
-        var repositories = gitHubUser.getGitHubUser().listRepositories();
-        try {
-            return repositories
-                    .toList()
-                    .stream()
-                    .map(GHRepository::getName)
-                    .collect(Collectors.toList());
-        } catch (IOException ex) {
-            log.error("Could not get repositories for user: {}. Reason: {}", configurationConfig.getGitHubUser(), ex.toString());
-            return new ArrayList<>();
-        }
+        return gitHubUser.listTasks();
     }
 
     @Override
     public List<String> listUserTasks(String userId) {
-
-        log.info("Listing all tasks available for user {}", userId);
-
-        List<String> branches = new ArrayList<>();
-
-        var repositories = gitHubUser.getGitHubUser().listRepositories().iterator();
-        while (repositories.hasNext()) {
-            try {
-                var repository = repositories.next();
-                if (repository.getBranches().containsKey(userId)) {
-                    branches.add(repository.getName());
-                }
-            } catch (IOException ex) {
-                log.error(String.format("Error while listing task for user: %s", ex.getMessage()));
-            }
-        }
-
-        return branches;
+        return gitHubUser.listUserTasks(userId);
     }
 
     @Override
     public void getTask(String userId, String taskId, String workDir) {
-        var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
+        var uri = repositoryUriParser.createUri(configurationConfig.getRepositoryURI(), taskId);
         var path = Paths.get(workDir, userId, taskId);
 
         if (!listUserTasks(userId).contains(taskId)) {
@@ -77,13 +52,13 @@ public class GitHubTaskRepository implements TaskRepository {
             return;
         }
 
-        if (!repositoryExists(path)) {
-            cloneRepository(uri, null, path);
+        if (!repositoryContentProvider.repositoryExists(path)) {
+            repositoryContentProvider.cloneRepository(uri, null, path);
         }
-        if (!repositoryOnBranch(userId, path)) {
-            checkoutBranch(path, userId);
+        if (!repositoryContentProvider.repositoryOnBranch(userId, path)) {
+            repositoryContentProvider.checkoutBranch(path, userId);
         } else {
-            pullChanges(path);
+            repositoryContentProvider.pullChanges(path);
         }
     }
 
@@ -99,7 +74,7 @@ public class GitHubTaskRepository implements TaskRepository {
 
     @Override
     public void assignTaskToUser(String userId, String taskId, String workDir) {
-        var uri = configurationConfig.getRepositoryURI() + taskId + ".git";
+        var uri = repositoryUriParser.createUri(configurationConfig.getRepositoryURI(), taskId);
         var path = Paths.get(workDir, userId, taskId);
 
         if (listUserTasks(userId).contains(taskId)) {
@@ -107,9 +82,9 @@ public class GitHubTaskRepository implements TaskRepository {
             return;
         }
 
-        if (!repositoryExists(path)) {
-            Git git = cloneRepository(uri, null, path);
-            checkoutBranch(path, userId);
+        if (!repositoryContentProvider.repositoryExists(path)) {
+            Git git = repositoryContentProvider.cloneRepository(uri, null, path);
+            repositoryContentProvider.checkoutBranch(path, userId);
             try {
                 git.push().setCredentialsProvider(credentialsProvider).call();
             } catch (GitAPIException ex) {
@@ -165,60 +140,5 @@ public class GitHubTaskRepository implements TaskRepository {
 
     public void saveTask(String userId, String taskId) {
         saveTask(userId, taskId, configurationConfig.getWorkDirectory());
-    }
-
-    private void pullChanges(Path path) {
-        try {
-            Git git = Git.open(path.toFile());
-            git.pull().call();
-        } catch (IOException | GitAPIException ex) {
-            log.error("Could not pull changes to repository {}. Reason: {}", path, ex.toString());
-        }
-    }
-
-    private Git cloneRepository(String uri, String userId, Path path) {
-        try {
-            CloneCommand command = Git.cloneRepository()
-                    .setCredentialsProvider(credentialsProvider)
-                    .setURI(uri)
-                    .setDirectory(path.toFile());
-            if (userId != null) {
-                command.setBranch(userId);
-            }
-            return command.call();
-        } catch (GitAPIException ex) {
-            log.error("Could not clone and checkout branch {} from repository {} to location {}. Reason: {}",
-                    userId, uri, path, ex.toString());
-            throw new RuntimeException(String.format("Could not clone repository {}", uri));
-        }
-    }
-
-    private boolean repositoryExists(Path path) {
-        FileRepositoryBuilder repositoryBuilder = new FileRepositoryBuilder();
-        return repositoryBuilder.findGitDir(path.toFile()).getGitDir() != null;
-    }
-
-    private boolean repositoryOnBranch(String userId, Path path) {
-        try {
-            Git git = Git.open(path.toFile());
-            git.fetch().call();
-            return userId.equals(git.getRepository().getBranch());
-        } catch (GitAPIException | IOException ex) {
-            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
-        }
-
-        return false;
-    }
-
-    private void checkoutBranch(Path path, String userId) {
-        try {
-            Git git = Git.open(path.toFile());
-            git.checkout()
-                    .setCreateBranch(true)
-                    .setName(userId)
-                    .call();
-        } catch (IOException | GitAPIException ex) {
-            log.error("Could not checkout branch {}. Reason: {}", userId, ex.toString());
-        }
     }
 }
