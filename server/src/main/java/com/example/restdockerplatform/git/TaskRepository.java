@@ -1,5 +1,7 @@
 package com.example.restdockerplatform.git;
 
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
+
 import java.util.List;
 
 public interface TaskRepository {
@@ -40,7 +42,7 @@ public interface TaskRepository {
         Metoda służy do tego, aby umieścić danego task przypisany do użytkownika (tj branch
         o nazwie równej ID użytkownika w repozytorium zdalnym
      */
-    void saveTask(String userId, String taskId, String workDir);
+    void saveTask(String userId, String taskId, String workDir) throws RepositoryNotFoundException;
 
-    void saveTask(String userId, String taskId);
+    void saveTask(String userId, String taskId) throws RepositoryNotFoundException;
 }

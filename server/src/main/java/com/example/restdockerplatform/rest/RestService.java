@@ -1,8 +1,12 @@
 package com.example.restdockerplatform.rest;
 
+import com.example.restdockerplatform.domain.UserTask;
+import com.example.restdockerplatform.event.SaveUserTaskEvent;
+import com.example.restdockerplatform.domain.UploadStatus;
+import com.example.restdockerplatform.file.FileService;
 import com.example.restdockerplatform.git.TaskRepository;
-import lombok.AllArgsConstructor;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import com.example.restdockerplatform.persistence.inMemory.ProcessingRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,12 +20,20 @@ import java.util.List;
 
 
 @Service
-@AllArgsConstructor
 class RestService {
 
-
-    private FileService fileService;
+    private final ApplicationEventPublisher publisher;
+    private final FileService fileService;
     private final TaskRepository taskRepository;
+    private final ProcessingRepository processingRepository;
+
+
+    RestService(ApplicationEventPublisher publisher, FileService fileService, TaskRepository taskRepository, ProcessingRepository processingRepository) {
+        this.publisher = publisher;
+        this.fileService = fileService;
+        this.taskRepository = taskRepository;
+        this.processingRepository = processingRepository;
+    }
 
 
     Resource getFile(String user, String project) throws IOException {
@@ -29,31 +41,25 @@ class RestService {
         // TODO get files from Git
         taskRepository.getTask(user, project);
 
-        // prepare zip file
-        final String fileCodeName = fileService.zipFiles(user, project);
-
-        Resource resource = fileService.getFileAsResource(fileCodeName);
-
-        return resource;
+        return fileService.getFile(user, project);
     }
 
 
     String saveFile(String user, String project, MultipartFile multipartFile) throws IOException {
 
+        // test if its a .zip file
         if (!fileService.verifyMultipartFileExtension(multipartFile)) {
             throw new IncorrectFileTypeException("Incorrect file type");
         }
 
+        // save file
         final String fileCodeName = fileService.saveFile(user, project, multipartFile);
 
-        // TODO test if its a .zip file
+        // save status
+        processingRepository.setStatus(new UserTask(user, project), UploadStatus.STARTED);
 
-        // unzip zip file in proper place
-        fileService.unzipFile(user, project);
-
-
-        // TODO commit and push changes to Git repository
-        taskRepository.saveTask(user, project);
+        // order unzipping and sending to git repository
+        publisher.publishEvent(SaveUserTaskEvent.builder().user(user).project(project).build());
 
         return fileCodeName;
     }
@@ -66,12 +72,18 @@ class RestService {
 
 
     FileUploadResponse prepareFileUploadResponse(String user, String project, MultipartFile multipartFile, String filecode) {
-        FileUploadResponse response = new FileUploadResponse();
-        response.setFileName(filecode);
-        long size = multipartFile.getSize();
 
+        FileUploadResponse response = new FileUploadResponse();
+
+        response.setFileName(filecode);
+
+        long size = multipartFile.getSize();
         response.setSize(size);
+
         response.setDownloadUri(RestUtil.getDownloadUri(user, project));
+
+        response.setSaveStatusUri(RestUtil.getSaveStatusUri(user, project));
+
         return response;
     }
 
@@ -91,5 +103,32 @@ class RestService {
                 .body(resource);
     }
 
+    ResponseEntity<String> orderExecute(String user, String project) {
+
+        if (processingRepository.isFinished(new UserTask(user, project))) {
+            // TODO order execute
+
+            return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s", user, project));
+        }
+
+        return ResponseEntity.badRequest().body(String.format("Can not execute, upload not finished,\nuser = %s, project = %s", user, project));
+    }
+
+    ResponseEntity<String> getSaveStatus(String user, String project) {
+
+        if (processingRepository.isFinished(new UserTask(user, project))) {
+
+            return ResponseEntity.ok().body(String.format("Can be executed,\nuser = %s, project = %s", user, project));
+        }
+
+        return ResponseEntity.ok().body(String.format("Saving in progress, check again in a few minutes,\nuser = %s, project = %s", user, project));
+    }
+
+
+    ResponseEntity<String> getExecuteStatus(String user, String project) {
+
+        // TODO getExecutestatus from database --> TaskRepository
+        return ResponseEntity.ok().body(String.format("Temporary execution status,\nuser = %s, project = %s", user, project));
+    }
 
 }

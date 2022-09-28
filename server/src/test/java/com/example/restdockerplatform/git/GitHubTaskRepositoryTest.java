@@ -1,5 +1,6 @@
 package com.example.restdockerplatform.git;
 
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.junit.Test;
 
 
@@ -44,7 +45,7 @@ public class GitHubTaskRepositoryTest {
     }
 
     @Test
-    public void shouldCommitAndPushUserChangesInBranch() {
+    public void shouldCommitAndPushUserChangesInBranch() throws RepositoryNotFoundException {
         String userId = "user_adam";
         String taskId = "task3";
 

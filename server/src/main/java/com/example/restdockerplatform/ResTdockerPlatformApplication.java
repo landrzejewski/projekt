@@ -1,14 +1,10 @@
 package com.example.restdockerplatform;
 
-import com.example.restdockerplatform.task.Task;
-//import com.example.restdockerplatform.task.TaskRepository;
-//import com.example.restdockerplatform.task.TaskStatus;
+//import com.example.restdockerplatform.persistence.database.TaskRepository;
+//import com.example.restdockerplatform.persistence.database.TaskStatus;
 //import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 public class ResTdockerPlatformApplication {

@@ -1,6 +1,7 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.file;
 
 import com.example.restdockerplatform.utils.FileUtil;
+import com.example.restdockerplatform.utils.UnZipException;
 import com.example.restdockerplatform.utils.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +17,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 
-@Component
 @Slf4j
+@Component
 public class FileService {
 
 
@@ -36,7 +38,22 @@ public class FileService {
     }
 
 
-    public static Resource getFileAsResource(String fileCodeName) throws IOException {
+    /**
+     * returns zip file of git repository branch (project/user) directory
+     *
+     * @param user     user
+     * @param project  project
+     * @return
+     */
+    public Resource getFile(String user, String project) throws IOException {
+
+        final String fileCodeName = zipFiles(user, project);
+
+        return getFileAsResource(fileCodeName);
+    }
+
+
+    private Resource getFileAsResource(String fileCodeName) throws IOException {
 
         log.info(" -> getFileAsResource, fileCode: {}", fileCodeName);
         final Path dirPath = Paths.get(USER_ZIPFILE_SPACE);
@@ -55,7 +72,16 @@ public class FileService {
     }
 
 
-    public static String saveFile(String user, String project, MultipartFile multipartFile)
+    /**
+     * Saves file in user zipfile space
+     *
+     * @param user           user
+     * @param project        project
+     * @param multipartFile  file
+     * @return
+     * @throws IOException
+     */
+    public String saveFile(String user, String project, MultipartFile multipartFile)
             throws IOException {
 
         Path uploadPath = Paths.get(USER_ZIPFILE_SPACE);
@@ -77,9 +103,8 @@ public class FileService {
     }
 
 
-    public String zipFiles(String user, String project) throws IOException {
+    private String zipFiles(String user, String project) throws IOException {
 
-        final String fileCode = FileUtil.getFileCode(user, project);
         final String fileCodeName = FileUtil.getFileCodeName(user, project);
 
         final File directoryToZip = new File(USER_FILE_SPACE + File.separator + user + File.separator + project);
@@ -90,9 +115,8 @@ public class FileService {
         return fileCodeName;
     }
 
-    public void unzipFile(String user, String project) {
+    public void unzipFile(String user, String project) throws UnZipException {
 
-        final String fileCode = FileUtil.getFileCode(user, project);
         final String fileCodeName = FileUtil.getFileCodeName(user, project);
 
         final String zipFilePath = USER_ZIPFILE_SPACE + File.separator + fileCodeName;
@@ -102,7 +126,16 @@ public class FileService {
     }
 
     public boolean verifyMultipartFileExtension(MultipartFile multipartFile) {
-        return multipartFile.getOriginalFilename().toLowerCase().endsWith(FileUtil.ZIPFILE_EXTENSION);
+
+        return Optional.ofNullable(multipartFile)
+                .map(MultipartFile::getOriginalFilename)
+                .map(String::toLowerCase)
+                .filter(s -> s.endsWith(FileUtil.ZIPFILE_EXTENSION))
+                .isPresent();
+
+//        return multipartFile != null
+//                && multipartFile.getOriginalFilename() != null
+//                && multipartFile.getOriginalFilename().toLowerCase().endsWith(FileUtil.ZIPFILE_EXTENSION);
     }
 
 }

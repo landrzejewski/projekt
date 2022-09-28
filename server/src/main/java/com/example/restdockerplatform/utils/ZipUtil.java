@@ -36,7 +36,7 @@ public final class ZipUtil {
      * @param zipFilePath
      * @param destinationDirectory
      */
-    public static void unzip(String zipFilePath, String destinationDirectory) {
+    public static void unzip(String zipFilePath, String destinationDirectory) throws UnZipException {
 
         log.info(" -> unzip, zipFilePath = {}, destinationDirectory = {}", zipFilePath, destinationDirectory);
         File dir = new File(destinationDirectory);
@@ -105,6 +105,7 @@ public final class ZipUtil {
         } catch (IOException e) {
             e.printStackTrace();
             log.error(" -- unzip, ERROR unziping file: " + e.getMessage());
+            throw new UnZipException(e);
         }
         log.info(" <- unzip ");
     }
