@@ -2,8 +2,10 @@ package com.example.restdockerplatform.git;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -76,6 +79,71 @@ public class GitHubRepositoryContentProvider implements RepositoryContentProvide
             git.pull().call();
         } catch (IOException | GitAPIException ex) {
             log.error("Could not pull changes to repository {}. Reason: {}", path, ex.toString());
+        }
+    }
+
+    @Override
+    public int addModifiedFiles(Path path) {
+        Git git;
+        try {
+            git = Git.open(path.toFile());
+        } catch (IOException ex) {
+            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
+            return 0;
+        }
+
+        int filesModifiedCount;
+        try {
+            Status status = git.status().call();
+            AddCommand addCommand = git.add();
+
+            var modifiedFiles = status.getModified();
+            if (modifiedFiles.isEmpty()) {
+                log.info("No files modified in: {}", path);
+                return 0;
+            }
+            filesModifiedCount = modifiedFiles.size();
+
+            status.getModified().forEach(addCommand::addFilepattern);
+
+            addCommand.call();
+        } catch (GitAPIException ex) {
+            log.error("Failed to add modified files in repository: {}. Reason: {}", path, ex.toString());
+            return 0;
+        }
+
+        return filesModifiedCount;
+    }
+    @Override
+    public void commit(Path path) {
+        Git git;
+        try {
+            git = Git.open(path.toFile());
+        } catch (IOException ex) {
+            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
+            return;
+        }
+
+        try {
+            git.commit().setMessage(UUID.randomUUID().toString()).call();
+        } catch (GitAPIException ex) {
+            log.error("Could not commit files in repository: {}. Reason: {}", path, ex.toString());
+        }
+    }
+    @Override
+    public void push(Path path) {
+        Git git;
+        try {
+            git = Git.open(path.toFile());
+        } catch (IOException ex) {
+            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
+            return;
+        }
+
+        try {
+            git.push().setCredentialsProvider(credentialsProvider).call();
+        } catch (GitAPIException ex) {
+            log.error("Failed to push. Reason: {}", ex.toString());
         }
     }
 }

@@ -2,6 +2,7 @@ package com.example.restdockerplatform.git;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -128,11 +128,50 @@ public class GitHubTaskRepositoryTest {
     }
 
     @Test
-    @Disabled
-    public void shouldCommitAndPushUserChangesInBranch() {
+    public void shouldNotCommitWhenNoChangesInRepo() throws GitAPIException, IOException {
+        // given
+        var helper = GitHubTestTaskHelper.init();
         String userId = "user_karol";
         String taskId = "task3";
 
-        // TODO
+        // when
+        helper.getTestedTaskRepository().saveTask(userId, taskId);
+
+        // then
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .addModifiedFiles(any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .commit(any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
+                .push(any());
+    }
+
+    @Test
+    public void shouldCommitAndPushWhenFileChanged() throws GitAPIException, IOException {
+        // given
+        String userId = "user_karol";
+        String taskId = "task3";
+        var helper = GitHubTestTaskHelper.init()
+                .withUserRepository(userId, taskId)
+                .withUserFileModified(userId, taskId);
+
+        // when
+        helper.getTestedTaskRepository().saveTask(userId, taskId);
+
+        // then
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .addModifiedFiles(any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .commit(any());
+        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+                .push(any());
+
+        int count = 0;
+        helper.getRemoteRepository().checkout().setName(userId).call();
+        for( RevCommit ignored : helper.getRemoteRepository().log().call() ) {
+            count++;
+        }
+
+        Assertions.assertEquals(2, count);
     }
 }

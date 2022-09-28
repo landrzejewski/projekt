@@ -10,4 +10,7 @@ public interface RepositoryContentProvider {
     void checkoutBranch(Path path, String userId);
     boolean repositoryOnBranch(String userId, Path path);
     void pullChanges(Path path);
+    int addModifiedFiles(Path path);
+    void commit(Path path);
+    void push(Path path);
 }

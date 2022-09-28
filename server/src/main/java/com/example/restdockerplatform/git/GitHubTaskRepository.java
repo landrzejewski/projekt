@@ -97,44 +97,12 @@ public class GitHubTaskRepository implements TaskRepository {
     public void saveTask(String userId, String taskId, String workDir) throws RepositoryNotFoundException {
         var path = Paths.get(workDir, userId, taskId);
 
-        Git git;
-        try {
-            git = Git.open(path.toFile());
-        } catch (IOException ex) {
-            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
+        if (repositoryContentProvider.addModifiedFiles(path) == 0) {
+            log.info("No files modified in repo {}", path);
             return;
         }
-
-        try {
-            Status status = git.status().call();
-            AddCommand addCommand = git.add();
-
-            var modifiedFiles = status.getModified();
-            if (modifiedFiles.isEmpty()) {
-                log.info("No files modified in: {}", path);
-                return;
-            }
-
-            status.getModified().forEach(addCommand::addFilepattern);
-
-            addCommand.call();
-            log.info(status.getModified().toString());
-        } catch (GitAPIException ex) {
-            log.error("Failed to add modified files in repository: {}. Reason: {}", path, ex.toString());
-            return;
-        }
-
-        try {
-            git.commit().setMessage(UUID.randomUUID().toString()).call();
-        } catch (GitAPIException ex) {
-            log.error("Could not commit files in repository: {}. Reason: {}", path, ex.toString());
-        }
-
-        try {
-            git.push().setCredentialsProvider(credentialsProvider).call();
-        } catch (GitAPIException ex) {
-            log.error("Failed to push. Reason: {}", ex.toString());
-        }
+        repositoryContentProvider.commit(path);
+        repositoryContentProvider.push(path);
     }
 
 

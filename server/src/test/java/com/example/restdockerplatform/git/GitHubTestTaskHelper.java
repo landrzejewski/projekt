@@ -22,11 +22,11 @@ public class GitHubTestTaskHelper {
     static private final String DUMMY_FILE_NAME = "Readme.md";
     static private final String DUMMY_FILE_CONTENT = "CONTENT";
     static private final String DUMMY_COMMIT_MESSAGE = "Init Commit";
-
     static private final String TOKEN = "admin";
 
     String tempDirectory;
     String targetRepositoryPath;
+    Path sourceDirectoryPath;
     Git remoteRepository;
     TaskRepository testedTaskRepository;
 
@@ -34,7 +34,6 @@ public class GitHubTestTaskHelper {
     RepositoryContentProvider repositoryContentProvider;
 
     private GitHubTestTaskHelper() {
-
     }
 
     static GitHubTestTaskHelper init() throws GitAPIException, IOException {
@@ -56,15 +55,30 @@ public class GitHubTestTaskHelper {
         return this;
     }
 
+    public GitHubTestTaskHelper withUserRepository(String userId, String taskId) {
+        testedTaskRepository.assignTaskToUser(userId, taskId, targetRepositoryPath);
+        return this;
+    }
+
+    public GitHubTestTaskHelper withUserFileModified(String userId, String taskId) throws IOException {
+        try (PrintWriter writer = new PrintWriter(
+                Paths.get(targetRepositoryPath, userId, taskId, DUMMY_FILE_NAME).toString(),
+                StandardCharsets.UTF_8)) {
+            writer.append("aa");
+        }
+
+        return this;
+    }
+
     private void setupRemoteRepository() throws IOException, GitAPIException {
         tempDirectory = Files.createTempDirectory(TEMP_DIRECTORY_PREFIX).toFile().getAbsolutePath();
 
-        Path sourceDirectoryPath = Paths.get(tempDirectory, SOURCE_REPOSITORY_DIRECTORY_NAME);
+        sourceDirectoryPath = Paths.get(tempDirectory, SOURCE_REPOSITORY_DIRECTORY_NAME);
 
         Files.createDirectory(sourceDirectoryPath);
         remoteRepository = Git.init().setDirectory(sourceDirectoryPath.toFile()).call();
 
-        try (PrintWriter writer = new PrintWriter(Paths.get(sourceDirectoryPath.toString(),DUMMY_FILE_NAME).toString(), StandardCharsets.UTF_8)) {
+        try (PrintWriter writer = new PrintWriter(Paths.get(sourceDirectoryPath.toString(), DUMMY_FILE_NAME).toString(), StandardCharsets.UTF_8)) {
             writer.println(DUMMY_FILE_CONTENT);
         }
 
@@ -87,7 +101,6 @@ public class GitHubTestTaskHelper {
 
         projectContentProvider = mock(ProjectContentProvider.class);
         repositoryContentProvider = spy(new GitHubRepositoryContentProvider(credentialsProvider));
-
 
         testedTaskRepository = new GitHubTaskRepository(
                 gitHubConfigurationConfig,
