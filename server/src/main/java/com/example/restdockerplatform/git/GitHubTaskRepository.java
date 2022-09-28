@@ -7,6 +7,7 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.kohsuke.github.GHRepository;
@@ -43,7 +44,7 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void getTask(String userId, String taskId) {
+    public void getTask(String userId, String taskId) throws RepositoryNotFoundException {
         var uri = repositoryUriParser.createUri(configurationConfig.getRepositoryURI(), taskId);
         var path = Paths.get(configurationConfig.getWorkDirectory(), userId, taskId);
 
@@ -63,7 +64,7 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void assignTaskToUser(String userId, String taskId) {
+    public void assignTaskToUser(String userId, String taskId) throws RepositoryNotFoundException {
         var uri = repositoryUriParser.createUri(configurationConfig.getRepositoryURI(), taskId);
         var path = Paths.get(configurationConfig.getWorkDirectory(), userId, taskId);
 
@@ -84,7 +85,7 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void saveTask(String userId, String taskId) {
+    public void saveTask(String userId, String taskId) throws RepositoryNotFoundException {
         var path = Paths.get(configurationConfig.getWorkDirectory(), userId, taskId);
 
         if (repositoryContentProvider.addModifiedFiles(path) == 0) {

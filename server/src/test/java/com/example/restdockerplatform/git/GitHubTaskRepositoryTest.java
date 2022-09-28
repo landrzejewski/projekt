@@ -1,6 +1,7 @@
 package com.example.restdockerplatform.git;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Test;
@@ -130,9 +131,9 @@ public class GitHubTaskRepositoryTest {
     @Test
     public void shouldNotCommitWhenNoChangesInRepo() throws GitAPIException, IOException {
         // given
-        var helper = GitHubTestTaskHelper.init();
         String userId = "user_karol";
         String taskId = "task3";
+        var helper = GitHubTestTaskHelper.init().withUserRepository(userId, taskId);
 
         // when
         helper.getTestedTaskRepository().saveTask(userId, taskId);
@@ -173,5 +174,16 @@ public class GitHubTaskRepositoryTest {
         }
 
         Assertions.assertEquals(2, count);
+    }
+
+    @Test
+    public void shouldThrowWhenUserRepositoryDoesNotExist() throws GitAPIException, IOException {
+        // given
+        String userId = "user_karol";
+        String taskId = "task3";
+        var helper = GitHubTestTaskHelper.init();
+
+        // when, then
+        Assertions.assertThrows(RepositoryNotFoundException.class, () -> { helper.getTestedTaskRepository().saveTask(userId, taskId); });
     }
 }

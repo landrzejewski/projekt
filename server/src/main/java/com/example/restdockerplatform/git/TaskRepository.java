@@ -24,9 +24,9 @@ public interface TaskRepository {
         Metoda służy do tego, aby w danym repozytorium utwożyć branch o nazwie userId
         i umieścić go w repozytorium
      */
-    void assignTaskToUser(String taskId, String userId);
+    void assignTaskToUser(String taskId, String userId) throws RepositoryNotFoundException;
 
-    void getTask(String userId, String taskId);
+    void getTask(String userId, String taskId) throws RepositoryNotFoundException;
 
     /*
         Metoda służy do tego, aby umieścić danego task przypisany do użytkownika (tj branch

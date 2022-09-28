@@ -3,6 +3,7 @@ package com.example.restdockerplatform.git;
 import lombok.Getter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -55,7 +56,7 @@ public class GitHubTestTaskHelper {
         return this;
     }
 
-    public GitHubTestTaskHelper withUserRepository(String userId, String taskId) {
+    public GitHubTestTaskHelper withUserRepository(String userId, String taskId) throws RepositoryNotFoundException {
         testedTaskRepository.assignTaskToUser(userId, taskId);
         return this;
     }

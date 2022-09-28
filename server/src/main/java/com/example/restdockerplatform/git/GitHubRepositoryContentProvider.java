@@ -7,10 +7,12 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -47,22 +49,22 @@ public class GitHubRepositoryContentProvider implements RepositoryContentProvide
     }
 
     @Override
-    public void checkoutBranch(Path path, String userId) {
+    public void checkoutBranch(Path path, String userId) throws RepositoryNotFoundException {
+        Git git = openRepository(path.toFile());
         try {
-            Git git = Git.open(path.toFile());
             git.checkout()
                     .setCreateBranch(true)
                     .setName(userId)
                     .call();
-        } catch (IOException | GitAPIException ex) {
+        } catch (GitAPIException ex) {
             log.error("Could not checkout branch {}. Reason: {}", userId, ex.toString());
         }
     }
 
     @Override
-    public boolean repositoryOnBranch(String userId, Path path) {
+    public boolean repositoryOnBranch(String userId, Path path) throws RepositoryNotFoundException {
+        Git git = openRepository(path.toFile());
         try {
-            Git git = Git.open(path.toFile());
             git.fetch().call();
             return userId.equals(git.getRepository().getBranch());
         } catch (GitAPIException | IOException ex) {
@@ -83,14 +85,8 @@ public class GitHubRepositoryContentProvider implements RepositoryContentProvide
     }
 
     @Override
-    public int addModifiedFiles(Path path) {
-        Git git;
-        try {
-            git = Git.open(path.toFile());
-        } catch (IOException ex) {
-            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
-            return 0;
-        }
+    public int addModifiedFiles(Path path) throws RepositoryNotFoundException {
+        Git git = openRepository(path.toFile());
 
         int filesModifiedCount;
         try {
@@ -115,14 +111,8 @@ public class GitHubRepositoryContentProvider implements RepositoryContentProvide
         return filesModifiedCount;
     }
     @Override
-    public void commit(Path path) {
-        Git git;
-        try {
-            git = Git.open(path.toFile());
-        } catch (IOException ex) {
-            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
-            return;
-        }
+    public void commit(Path path) throws RepositoryNotFoundException {
+        Git git = openRepository(path.toFile());
 
         try {
             git.commit().setMessage(UUID.randomUUID().toString()).call();
@@ -131,19 +121,22 @@ public class GitHubRepositoryContentProvider implements RepositoryContentProvide
         }
     }
     @Override
-    public void push(Path path) {
-        Git git;
-        try {
-            git = Git.open(path.toFile());
-        } catch (IOException ex) {
-            log.error("Failed to load repository in: {}. Reason: {}", path, ex.toString());
-            return;
-        }
+    public void push(Path path) throws RepositoryNotFoundException {
+        Git git = openRepository(path.toFile());
 
         try {
             git.push().setCredentialsProvider(credentialsProvider).call();
         } catch (GitAPIException ex) {
             log.error("Failed to push. Reason: {}", ex.toString());
+        }
+    }
+
+    private Git openRepository(File file) throws RepositoryNotFoundException {
+        try {
+            return Git.open(file);
+        } catch (IOException ex) {
+            log.error("Failed to load repository in: {}. Reason: {}", file.toString(), ex.toString());
+            throw new RepositoryNotFoundException(String.format("Could not find repository %s", file.toPath()));
         }
     }
 }
