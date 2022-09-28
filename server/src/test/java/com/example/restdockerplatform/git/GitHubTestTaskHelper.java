@@ -56,7 +56,7 @@ public class GitHubTestTaskHelper {
     }
 
     public GitHubTestTaskHelper withUserRepository(String userId, String taskId) {
-        testedTaskRepository.assignTaskToUser(userId, taskId, targetRepositoryPath);
+        testedTaskRepository.assignTaskToUser(userId, taskId);
         return this;
     }
 

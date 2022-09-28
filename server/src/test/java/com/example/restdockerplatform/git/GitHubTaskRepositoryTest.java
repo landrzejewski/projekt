@@ -97,7 +97,7 @@ public class GitHubTaskRepositoryTest {
         when(helper.getProjectContentProvider().listUserTasks(anyString())).thenReturn(Collections.emptyList());
 
         // when
-        helper.getTestedTaskRepository().assignTaskToUser(userId, taskId, helper.getTargetRepositoryPath());
+        helper.getTestedTaskRepository().assignTaskToUser(userId, taskId);
 
         // then
         var remoteBranches = helper.getRemoteRepository().branchList().call()
@@ -118,7 +118,7 @@ public class GitHubTaskRepositoryTest {
         when(helper.getProjectContentProvider().listUserTasks(anyString())).thenReturn(List.of(taskId));
 
         // when
-        helper.getTestedTaskRepository().assignTaskToUser(userId, taskId, helper.getTargetRepositoryPath());
+        helper.getTestedTaskRepository().assignTaskToUser(userId, taskId);
 
         // then
         Mockito.verify(helper.getRepositoryContentProvider(), times(0))

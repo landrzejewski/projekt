@@ -43,9 +43,9 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void getTask(String userId, String taskId, String workDir) {
+    public void getTask(String userId, String taskId) {
         var uri = repositoryUriParser.createUri(configurationConfig.getRepositoryURI(), taskId);
-        var path = Paths.get(workDir, userId, taskId);
+        var path = Paths.get(configurationConfig.getWorkDirectory(), userId, taskId);
 
         if (!listUserTasks(userId).contains(taskId)) {
             log.info("Task {} not assigned to user {}", taskId, userId);
@@ -63,19 +63,9 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void getTask(String userId, String taskId) {
-        getTask(userId, taskId, configurationConfig.getWorkDirectory());
-    }
-
-    @Override
-    public void createTask(String taskName, String dir) {
-        // TO BE REMOVED
-    }
-
-    @Override
-    public void assignTaskToUser(String userId, String taskId, String workDir) {
+    public void assignTaskToUser(String userId, String taskId) {
         var uri = repositoryUriParser.createUri(configurationConfig.getRepositoryURI(), taskId);
-        var path = Paths.get(workDir, userId, taskId);
+        var path = Paths.get(configurationConfig.getWorkDirectory(), userId, taskId);
 
         if (listUserTasks(userId).contains(taskId)) {
             log.info("Task {} already assigned to user {}", taskId, userId);
@@ -94,8 +84,8 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void saveTask(String userId, String taskId, String workDir) throws RepositoryNotFoundException {
-        var path = Paths.get(workDir, userId, taskId);
+    public void saveTask(String userId, String taskId) {
+        var path = Paths.get(configurationConfig.getWorkDirectory(), userId, taskId);
 
         if (repositoryContentProvider.addModifiedFiles(path) == 0) {
             log.info("No files modified in repo {}", path);
@@ -103,10 +93,5 @@ public class GitHubTaskRepository implements TaskRepository {
         }
         repositoryContentProvider.commit(path);
         repositoryContentProvider.push(path);
-    }
-
-
-    public void saveTask(String userId, String taskId) {
-        saveTask(userId, taskId, configurationConfig.getWorkDirectory());
     }
 }
