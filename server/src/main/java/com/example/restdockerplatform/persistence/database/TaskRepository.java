@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.task;
+package com.example.restdockerplatform.persistence.database;
 
 //import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

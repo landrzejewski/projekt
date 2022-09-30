@@ -10,6 +10,7 @@ class FileUploadResponse {
 
     private String fileName;
     private String downloadUri;
+    private String saveStatusUri;
     private long size;
 
 }

@@ -15,7 +15,7 @@ public class GitHubConfigurationConfig {
 
 
     GitHubConfigurationConfig(@Value("${github.url}") String gitHubUrl,
-                                     @Value("${github.user}") String userName,
+                              @Value("${github.user}") String userName,
                               @Value("${github.token}") String gitHubToken) {
         this.gitHubRepositoryUrl = gitHubUrl;
         this.gitHubUser = userName;

@@ -5,6 +5,7 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.kohsuke.github.GHRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,7 +138,7 @@ public class GitHubTaskRepository implements TaskRepository {
     }
 
     @Override
-    public void saveTask(String userId, String taskId, String workDir) {
+    public void saveTask(String userId, String taskId, String workDir) throws RepositoryNotFoundException {
         var path = Paths.get(workDir, userId, taskId);
 
         Git git;
@@ -180,7 +181,7 @@ public class GitHubTaskRepository implements TaskRepository {
         }
     }
 
-    public void saveTask(String userId, String taskId) {
+    public void saveTask(String userId, String taskId) throws RepositoryNotFoundException {
         saveTask(userId, taskId, workDirectory);
     }
 

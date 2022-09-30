@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.task;
+package com.example.restdockerplatform.persistence.database;
 
 
 import lombok.*;

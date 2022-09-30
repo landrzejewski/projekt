@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -28,7 +27,13 @@ public class UserController {
 
     private final RestService restService;
 
-
+    /**
+     * Returns all project associated with user
+     * branch (user) of project
+     *
+     * @param user  user
+     * @return      list of projects
+     */
     @GetMapping("/{user}")
     List<String> getAllTasksForUser(@PathVariable final String user) {
 
@@ -42,9 +47,9 @@ public class UserController {
     /**
      * Downloads zipped files of user project -> branch (user) of project
      *
-     * @param user
-     * @param project
-     * @return
+     * @param user     user
+     * @param project  project
+     * @return         zip file of user branch of project
      */
     @GetMapping("/{user}/{project}")
     ResponseEntity<?> getFilesForUserProject(
@@ -65,9 +70,9 @@ public class UserController {
     /**
      * Uploads zipped files of user project -> branch (user) of project
      *
-     * @param user
-     * @param project
-     * @param multipartFile
+     * @param user           user
+     * @param project        project
+     * @param multipartFile  zip file
      * @return
      * @throws IOException
      */
@@ -79,30 +84,50 @@ public class UserController {
         log.info(" -> putFilesForUserProject, user = {}, project = {}", user, project);
 
         String fileCode = restService.saveFile(user, project, multipartFile);
+
+
         FileUploadResponse response = restService.prepareFileUploadResponse(user, project, multipartFile, fileCode);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
+    /**
+     * Gets save status executed asynchronicly
+     *
+     * @param user     user
+     * @param project  project
+     * @return         status of user task uploading
+     */
+    @GetMapping("/saveStatus/{user}/{project}")
+    ResponseEntity<String> getSaveStatusForUserProject(
+            @PathVariable final String user,
+            @PathVariable final String project) {
+
+        log.info(" -> getSaveStatusForUserProject, user = {}, project = {}", user, project);
+        return restService.getSaveStatus(user, project);
+    }
+
+
     @PostMapping("/execute/{user}/{project}")
-    void executeUserProject(
+    ResponseEntity<String> executeUserProject(
             @PathVariable final String user,
             @PathVariable final String project) {
 
         // TODO    POST zlecenie wykonania - wywołanie przetwarzania przez docker konkretnego zadania
         log.info(" -> executeUserProject, user = {}, project = {}", user, project);
+        return restService.orderExecute(user, project);
     }
 
 
     @GetMapping("/status/{user}/{project}")
-    String getStatusForUserProject(
+    ResponseEntity<String> getStatusForUserProject(
             @PathVariable final String user,
             @PathVariable final String project) {
 
         // TODO    GET pobieranie informacji zwrotnej z servera o statusie zadań użytkownika
         log.info(" -> getStatusForUserProject, user = {}, project = {}", user, project);
-        return "ok";
+        return restService.getExecuteStatus(user, project);
     }
 
 
