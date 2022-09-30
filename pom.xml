@@ -11,6 +11,7 @@
     <modules>
         <module>server</module>
         <module>agent</module>
+        <module>agent-lib</module>
     </modules>
 
     <properties>

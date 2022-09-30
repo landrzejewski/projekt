@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.git;
 
-import local.wspolnyprojekt.nodeagent.common.GitCredentials;
+import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
 import lombok.Getter;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.springframework.stereotype.Component;

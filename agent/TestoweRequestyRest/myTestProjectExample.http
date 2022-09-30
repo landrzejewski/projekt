@@ -11,16 +11,24 @@ Content-Type: application/json
 PUT http://127.0.0.1:8000/testproject_01/git
 
 ### Wystartowanie Dockera
-GET http://127.0.0.1:8000/testproject_01/up
+POST http://127.0.0.1:8000/testproject_01
+
+"TASK_COMMAND_START"
 
 ### Pobranie logów
-GET http://127.0.0.1:8000/testproject_01/log
+POST http://127.0.0.1:8000/testproject_01
+
+"TASK_COMMAND_LOG"
 
 ### Wyłączenie Dockera
-GET http://127.0.0.1:8000/testproject_01/down
+POST http://127.0.0.1:8000/testproject_01
+
+"TASK_COMMAND_STOP"
 
 ### Czyszczenie voluminów i obrazów Dockera (pliki z repo i wynikowe zostają)
-GET http://127.0.0.1:8000/testproject_01/cleanup
+POST http://127.0.0.1:8000/testproject_01
+
+"TASK_COMMAND_CLEANUP"
 
 ### Przykład pobierania pliku wyniku
 GET http://127.0.0.1:8000/testproject_01/ftp/out/wynik.txt

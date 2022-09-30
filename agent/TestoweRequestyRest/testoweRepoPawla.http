@@ -1,5 +1,5 @@
-### Ustawienie credentials
-POST http://127.0.0.1:8000/testproject_02/gitcredentials
+### Ustawienie credentials (globalne dla noda)
+POST http://127.0.0.1:8000/system/gitcredentials
 Content-Type: application/json
 
 {
@@ -8,7 +8,7 @@ Content-Type: application/json
 }
 
 ### Pobranie repo
-POST http://127.0.0.1:8000/testproject_02/gitclone
+POST http://127.0.0.1:8000/testproject_02/git
 Content-Type: application/json
 
 {

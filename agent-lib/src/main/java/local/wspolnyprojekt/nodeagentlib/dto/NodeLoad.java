@@ -1,8 +1,12 @@
-package local.wspolnyprojekt.nodeagent.common;
+package local.wspolnyprojekt.nodeagentlib.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class NodeLoad {
 // TODO Docelowo uzgodnić jakie dane potrzebne do loadbalancera
     Long totalMemorySize;

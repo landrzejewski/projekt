@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.serverstatus;
 
-import local.wspolnyprojekt.nodeagent.common.NodeLoad;
+import local.wspolnyprojekt.nodeagentlib.dto.NodeLoad;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
