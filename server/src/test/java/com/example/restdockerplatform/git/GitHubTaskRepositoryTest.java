@@ -41,7 +41,7 @@ public class GitHubTaskRepositoryTest {
         Assertions.assertTrue(expectedPath.toFile().exists());
         Assertions.assertTrue(helper.getRepositoryContentProvider().repositoryOnBranch(userId, expectedPath));
         Mockito.verify(helper.getRepositoryContentProvider(), times(0))
-                .pullChanges(any());
+                .checkoutBranch(any(), any());
     }
 
     @Test
@@ -60,9 +60,9 @@ public class GitHubTaskRepositoryTest {
         // then
         Mockito.verify(helper.getRepositoryContentProvider(), times(1))
                 .cloneRepository(any(), any(), any());
-        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+        Mockito.verify(helper.getRepositoryContentProvider(), times(0))
                 .checkoutBranch(any(), any());
-        Mockito.verify(helper.getRepositoryContentProvider(), times(1))
+        Mockito.verify(helper.getRepositoryContentProvider(), times(2))
                 .pullChanges(any());
     }
 

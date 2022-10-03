@@ -54,7 +54,7 @@ public class GitHubTaskRepository implements TaskRepository {
         }
 
         if (!repositoryContentProvider.repositoryExists(path)) {
-            repositoryContentProvider.cloneRepository(uri, null, path);
+            repositoryContentProvider.cloneRepository(uri, userId, path);
         }
         if (!repositoryContentProvider.repositoryOnBranch(userId, path)) {
             repositoryContentProvider.checkoutBranch(path, userId);
