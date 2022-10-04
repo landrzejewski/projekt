@@ -12,14 +12,16 @@ public class GitHubConfigurationConfig {
     private final String gitHubRepositoryUrl;
     private final String gitHubUser;
     private final String gitHubToken;
-
+    private final String workDirectory;
 
     GitHubConfigurationConfig(@Value("${github.url}") String gitHubUrl,
                               @Value("${github.user}") String userName,
-                              @Value("${github.token}") String gitHubToken) {
+                              @Value("${github.token}") String gitHubToken,
+                              @Value("${user.file.space}") String workDirectory) {
         this.gitHubRepositoryUrl = gitHubUrl;
         this.gitHubUser = userName;
         this.gitHubToken = gitHubToken;
+        this.workDirectory = workDirectory;
     }
 
     String getRepositoryURI() {
