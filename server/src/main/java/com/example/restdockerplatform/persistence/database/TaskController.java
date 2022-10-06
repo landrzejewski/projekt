@@ -35,7 +35,7 @@ public class TaskController {
 
 
     // Update task status operation
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/tasks/{id}/status")
     public Task updateTaskStatus(@RequestBody TaskStatus taskStatus,
                                  @PathVariable("id") String taskId) {
         return taskService.updateTaskStatus(
@@ -44,7 +44,7 @@ public class TaskController {
 
 
     // Update task text result operation
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/tasks/{id}/result")
     public Task updateTaskTextResult(@RequestBody String textResult,
                                      @PathVariable("id") String taskId) {
         return taskService.updateTaskTextResult(
@@ -53,7 +53,7 @@ public class TaskController {
 
 
     // Update task bytes result operation
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/tasks/{id}/byteresult")
     public Task updateTaskBytesResult(@RequestBody byte[] bytesResult,
                                       @PathVariable("id") String taskId) {
         return taskService.updateTaskBytesResult(

@@ -31,10 +31,10 @@ public class Task {
     @Column(columnDefinition = "varchar(50)")
     private TaskStatus status;
 
-    @Column(columnDefinition = "BLOB" )
+    @Column(columnDefinition = "bytea")
     private byte[] bytesResult;
 
- //   @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String textResult;
 
     @Column
