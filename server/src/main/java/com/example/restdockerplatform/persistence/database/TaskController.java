@@ -30,9 +30,8 @@ public class TaskController {
     //Read one by Id
     @GetMapping("/tasks/{id}")
     public Task findById(String id) {
-        return taskService.findById(id);
+        return taskService.findById(id).get();
     }
-
 
     // Update task status operation
     @PutMapping("/tasks/{id}/status")

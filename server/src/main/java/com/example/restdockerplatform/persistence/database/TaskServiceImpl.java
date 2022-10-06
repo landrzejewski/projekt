@@ -1,18 +1,17 @@
 package com.example.restdockerplatform.persistence.database;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-
+@RequiredArgsConstructor
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    @Autowired
-    private TaskRepository taskRepository;
-
+    private final TaskRepository taskRepository;
 
     @Override
     public Task saveTask(Task task) {
@@ -27,10 +26,9 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public Task findById(String id) {
+    public Optional<Task> findById(String id) {
         return taskRepository
-                .findById(id)
-                .get();
+                .findById(id);
     }
 
 
@@ -75,5 +73,9 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.deleteById(taskId);
     }
 
+    @Override
+    public List<Task> findByUserNameAndProject(String username, String project) {
+        return taskRepository.findByUsernameAndProject(username, project);
+    }
 
 }

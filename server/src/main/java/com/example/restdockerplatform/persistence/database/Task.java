@@ -2,6 +2,7 @@ package com.example.restdockerplatform.persistence.database;
 
 
 import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -16,25 +17,26 @@ import java.time.LocalDateTime;
 public class Task {
 
     @Id
-    @Column(columnDefinition = "varchar(255)")
+    @Column
     private String Id;
 
-    @Column(columnDefinition = "varchar(255)")
+    @Column
     private String nodeUUId;
 
-    @Column(columnDefinition = "varchar(255)")
-    private String userName;
+    @Column
+    private String username;
 
-    @Column(columnDefinition = "varchar(255)")
+    @Column
     private String project;
 
-    @Column(columnDefinition = "varchar(50)")
+    @Column
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    @Column(columnDefinition = "bytea")
+    @Column
     private byte[] bytesResult;
 
-    @Column(columnDefinition = "text")
+    @Column
     private String textResult;
 
     @Column
