@@ -41,8 +41,8 @@ public class FileService {
     /**
      * returns zip file of git repository branch (project/user) directory
      *
-     * @param user     user
-     * @param project  project
+     * @param user    user
+     * @param project project
      * @return
      */
     public Resource getFile(String user, String project) throws IOException {
@@ -75,9 +75,9 @@ public class FileService {
     /**
      * Saves file in user zipfile space
      *
-     * @param user           user
-     * @param project        project
-     * @param multipartFile  file
+     * @param user          user
+     * @param project       project
+     * @param multipartFile file
      * @return
      * @throws IOException
      */
