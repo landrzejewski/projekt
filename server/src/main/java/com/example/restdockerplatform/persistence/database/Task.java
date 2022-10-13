@@ -3,30 +3,48 @@ package com.example.restdockerplatform.persistence.database;
 
 import lombok.*;
 
-//import javax.persistence.*;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-//@Entity
-//@Table(name = "tasks")
+@Entity
+@Table(name = "tasks")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class Task {
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int Id;
+    @Id
+    @Column
+    private String Id;
 
-    private String userName;
+    @Column
+    private String nodeUUId;
+
+    @Column
+    private String username;
+
+    @Column
     private String project;
-    private TaskStatus status;
-    private String result;
 
-    public Task(String userName, String project, TaskStatus status, String result) {
-        this.userName = userName;
-        this.project = project;
-        this.status = status;
-        this.result = result;
-    }
+    @Column
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+
+    @Column
+    private byte[] bytesResult;
+
+    @Column
+    private String textResult;
+
+    @Column
+    private LocalDateTime startDateTime;
+
+    @Column
+    private LocalDateTime endDateTime;
+
+    //TODO: zmiana statusu na start -> set startTime, Zakonczony -> set endTime
+
 }

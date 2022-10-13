@@ -1,6 +1,7 @@
 package com.example.restdockerplatform.rest;
 
 
+import com.example.restdockerplatform.persistence.database.Task;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -121,7 +122,7 @@ public class UserController {
 
 
     @GetMapping("/status/{user}/{project}")
-    ResponseEntity<String> getStatusForUserProject(
+    ResponseEntity<List<Task>> getStatusForUserProject(
             @PathVariable final String user,
             @PathVariable final String project) {
 

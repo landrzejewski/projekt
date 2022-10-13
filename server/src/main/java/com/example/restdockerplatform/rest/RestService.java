@@ -1,10 +1,12 @@
 package com.example.restdockerplatform.rest;
 
+import com.example.restdockerplatform.domain.UploadStatus;
 import com.example.restdockerplatform.domain.UserTask;
 import com.example.restdockerplatform.event.SaveUserTaskEvent;
-import com.example.restdockerplatform.domain.UploadStatus;
 import com.example.restdockerplatform.file.FileService;
 import com.example.restdockerplatform.git.TaskRepository;
+import com.example.restdockerplatform.persistence.database.Task;
+import com.example.restdockerplatform.persistence.database.TaskService;
 import com.example.restdockerplatform.persistence.inMemory.ProcessingRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
@@ -22,13 +24,16 @@ import java.util.List;
 @Service
 class RestService {
 
+
+    private final TaskService taskService;
     private final ApplicationEventPublisher publisher;
     private final FileService fileService;
     private final TaskRepository taskRepository;
     private final ProcessingRepository processingRepository;
 
 
-    RestService(ApplicationEventPublisher publisher, FileService fileService, TaskRepository taskRepository, ProcessingRepository processingRepository) {
+    RestService(TaskService taskService, ApplicationEventPublisher publisher, FileService fileService, TaskRepository taskRepository, ProcessingRepository processingRepository) {
+        this.taskService = taskService;
         this.publisher = publisher;
         this.fileService = fileService;
         this.taskRepository = taskRepository;
@@ -125,10 +130,11 @@ class RestService {
     }
 
 
-    ResponseEntity<String> getExecuteStatus(String user, String project) {
+    ResponseEntity<List<Task>> getExecuteStatus(String user, String project) {
+        List<Task> userTasks = taskService.findByUserNameAndProject(user, project);
 
         // TODO getExecutestatus from database --> TaskRepository
-        return ResponseEntity.ok().body(String.format("Temporary execution status,\nuser = %s, project = %s", user, project));
+        return ResponseEntity.ok().body(userTasks);
     }
 
 }
