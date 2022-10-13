@@ -1,5 +1,6 @@
 package com.example.restdockerplatform.rest;
 
+import com.example.restdockerplatform.domain.ProcessStatus;
 import com.example.restdockerplatform.domain.UploadStatus;
 import com.example.restdockerplatform.domain.UserTask;
 import com.example.restdockerplatform.event.SaveUserTaskEvent;
@@ -8,6 +9,8 @@ import com.example.restdockerplatform.git.TaskRepository;
 import com.example.restdockerplatform.persistence.database.Task;
 import com.example.restdockerplatform.persistence.database.TaskService;
 import com.example.restdockerplatform.persistence.inMemory.ProcessingRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +25,8 @@ import java.util.List;
 
 
 @Service
-class RestService {
+@Slf4j
+class ProjectService {
 
 
     private final TaskService taskService;
@@ -32,7 +36,7 @@ class RestService {
     private final ProcessingRepository processingRepository;
 
 
-    RestService(TaskService taskService, ApplicationEventPublisher publisher, FileService fileService, TaskRepository taskRepository, ProcessingRepository processingRepository) {
+    ProjectService(TaskService taskService, ApplicationEventPublisher publisher, FileService fileService, TaskRepository taskRepository, ProcessingRepository processingRepository) {
         this.taskService = taskService;
         this.publisher = publisher;
         this.fileService = fileService;
@@ -43,7 +47,7 @@ class RestService {
 
     Resource getFile(String user, String project) throws IOException {
 
-        // TODO get files from Git
+        // get files from Git
         taskRepository.getTask(user, project);
 
         return fileService.getFile(user, project);
@@ -80,10 +84,13 @@ class RestService {
 
         FileUploadResponse response = new FileUploadResponse();
 
-        response.setFileName(filecode);
+        if (multipartFile != null) {
 
-        long size = multipartFile.getSize();
-        response.setSize(size);
+            response.setFileName(filecode);
+
+            long size = multipartFile.getSize();
+            response.setSize(size);
+        }
 
         response.setDownloadUri(RestUtil.getDownloadUri(user, project));
 
@@ -110,31 +117,54 @@ class RestService {
 
     ResponseEntity<String> orderExecute(String user, String project) {
 
-        if (processingRepository.isFinished(new UserTask(user, project))) {
-            // TODO order execute
+        final ProcessStatus processStatus = processingRepository.getStatus(new UserTask(user, project));
 
-            return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s", user, project));
+        switch (processStatus) {
+            case READY -> {
+                // TODO order execute
+
+                return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s", user, project));
+            }
+            case ERROR -> {
+                return ResponseEntity.badRequest().body(String.format("Cannot execute, error uploading task,\nuser = %s, project = %s", user, project));
+            }
+            default -> { // NOT_READY
+                return ResponseEntity.badRequest().body(String.format("Cannot execute, upload not finished,\nuser = %s, project = %s", user, project));
+            }
         }
 
-        return ResponseEntity.badRequest().body(String.format("Can not execute, upload not finished,\nuser = %s, project = %s", user, project));
     }
 
-    ResponseEntity<String> getSaveStatus(String user, String project) {
+    ResponseEntity<ProcessStatusDTO> getSaveStatus(String user, String project) {
 
-        if (processingRepository.isFinished(new UserTask(user, project))) {
+        final ProcessStatus processStatus = processingRepository.getStatus(new UserTask(user, project));
 
-            return ResponseEntity.ok().body(String.format("Can be executed,\nuser = %s, project = %s", user, project));
-        }
-
-        return ResponseEntity.ok().body(String.format("Saving in progress, check again in a few minutes,\nuser = %s, project = %s", user, project));
+        return ResponseEntity
+                .ok()
+                .body(new ProcessStatusDTO(processStatus.name()));
     }
 
 
     ResponseEntity<List<Task>> getExecuteStatus(String user, String project) {
+
         List<Task> userTasks = taskService.findByUserNameAndProject(user, project);
 
-        // TODO getExecutestatus from database --> TaskRepository
         return ResponseEntity.ok().body(userTasks);
+    }
+
+    ResponseEntity<?> asssignUser(String user, String project) {
+
+        try {
+            taskRepository.assignTaskToUser(project, user);
+
+        } catch (RepositoryNotFoundException e) {
+
+            log.error("ERROR, cannot assign user to project, project {} not found ", project, e);
+
+            return ResponseEntity.badRequest().body(String.format("Cannot assign user to project,\nuser = %s, project = %s", user, project));
+        }
+
+        return ResponseEntity.ok().body(RestUtil.getDownloadUri(user, project));
     }
 
 }

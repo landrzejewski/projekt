@@ -1,0 +1,15 @@
+### Taski użytkownika
+GET http://127.0.0.1:8080/api/project/user_jan
+
+### Pliki użytkownika w projekcie
+GET http://127.0.0.1:8080/api/project/user_jan/task3
+
+### Status zapisu
+GET http://127.0.0.1:8080/api/project/saveStatus/user_jan/task11
+
+### Status wykonania
+GET http://127.0.0.1:8080/api/project/status/user_jan/task11
+
+
+
+
