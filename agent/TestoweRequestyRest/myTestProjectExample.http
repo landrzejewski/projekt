@@ -10,7 +10,7 @@ Content-Type: application/json
 ### Update (git pull)
 PUT http://127.0.0.1:8000/testproject_01/git
 
-### Wystartowanie Dockera
+### Wystartowanie zadania (jeśli trzeba, to pobranie/budowanie obrazów dla Dockera)
 POST http://127.0.0.1:8000/testproject_01
 
 "TASK_COMMAND_START"
@@ -20,15 +20,25 @@ POST http://127.0.0.1:8000/testproject_01
 
 "TASK_COMMAND_LOG"
 
-### Wyłączenie Dockera
+### Zatrzymanie zadania
 POST http://127.0.0.1:8000/testproject_01
 
 "TASK_COMMAND_STOP"
 
-### Czyszczenie voluminów i obrazów Dockera (pliki z repo i wynikowe zostają)
+### Status zadania
+POST http://127.0.0.1:8000/testproject_01
+
+"TASK_COMMAND_STATUS"
+
+### Czyszczenie voluminów i obrazów zadania (pliki z repo i wynikowe zostają)
 POST http://127.0.0.1:8000/testproject_01
 
 "TASK_COMMAND_CLEANUP"
+
+### Usuwanie workspace taska
+POST http://127.0.0.1:8000/testproject_01
+
+"TASK_COMMAND_DELETE"
 
 ### Przykład pobierania pliku wyniku
 GET http://127.0.0.1:8000/testproject_01/ftp/out/wynik.txt

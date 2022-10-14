@@ -11,9 +11,4 @@ import lombok.NoArgsConstructor;
 public class GitResource implements JsonString {
     String repositoryUrl;
     String branch;
-
-    public String getJsonString() {
-        return new Gson().toJson(this);
-    }
-
 }

@@ -25,7 +25,7 @@ public class ShellCommandsApi {
     @PostMapping(RestEndpoints.EXECUTE_SHELL_COMMAND_IN_WORKSPACE)
     ResponseEntity<String> execute(@RequestBody ShellCommand command, @PathVariable(name = TASKID_PATH_VARIABLE) String taskid) {
         log.info("{}", command);
-        commandExecutorService.executeCommand(command, taskid); // TODO Na razie blokujące i bez kolejkowania
+        commandExecutorService.executeCommand(command, taskid);
         return ResponseEntity.of(Optional.of(command.toString()));
     }
 

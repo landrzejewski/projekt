@@ -1,34 +1,37 @@
 package local.wspolnyprojekt.nodeagent.task;
 
-import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
+import local.wspolnyprojekt.nodeagent.docker.DockerService;
 import local.wspolnyprojekt.nodeagent.statusbroadcast.StatusBroadcaster;
+import local.wspolnyprojekt.nodeagent.task.state.TaskState;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateNull;
+import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.File;
+import java.util.concurrent.Semaphore;
 
 @RequiredArgsConstructor
 public class Task {
 
-    @Autowired
-    private StatusBroadcaster statusListener;
+    private final StatusBroadcaster statusListener;
+    private final WorkspaceUtils workspaceUtils;
 
     @Getter
     private final String taskId;
 
     @Getter
-    private TaskStatus status;
+    private TaskState status = new TaskStateNull();
 
-    @Setter
-    private GitResource gitResource;
+    @Getter
+    private Semaphore semaphore = new Semaphore(1);
 
-    @Setter
-    private GitCredentials gitCredentials;
-
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-        // TODO callListener
+    public File getWorkspaceAsFile() {
+        return workspaceUtils.getWorkspaceDirAsFile(taskId);
     }
 
-}
+    public void setStatus(TaskState status) {
+        this.status = status;
+        statusListener.broadcastStatusChange(this, status);
+    }
+
+ }

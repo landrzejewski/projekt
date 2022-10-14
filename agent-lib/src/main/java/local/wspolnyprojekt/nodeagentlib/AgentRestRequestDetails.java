@@ -1,10 +1,6 @@
 package local.wspolnyprojekt.nodeagentlib;
 
-import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
-import local.wspolnyprojekt.nodeagentlib.dto.RequestDetails;
-import local.wspolnyprojekt.nodeagentlib.dto.TaskCommand;
-import org.springframework.web.bind.annotation.RequestMethod;
+import local.wspolnyprojekt.nodeagentlib.dto.*;
 
 import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.*;
 
@@ -20,7 +16,7 @@ public class AgentRestRequestDetails {
 
     private static RequestDetails gitCredentialsRequestDetails(GitCredentials gitCredentials) {
         return RequestDetails.builder()
-                .requestMethod(RequestMethod.POST)
+                .requestMethod(AgentRequestMethod.POST)
                 .jsonPayload(gitCredentials.getJsonString())
                 .uriEndpoint(GIT_CREDENTIALS_ENDPOINT)
                 .build();
@@ -32,7 +28,7 @@ public class AgentRestRequestDetails {
 
     private static RequestDetails gitCloneRequestDetails(GitResource gitResource, String taskId) {
         return RequestDetails.builder()
-                .requestMethod(RequestMethod.POST)
+                .requestMethod(AgentRequestMethod.POST)
                 .jsonPayload(gitResource.getJsonString())
                 .uriEndpoint(GIT_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId))
                 .build();
@@ -40,7 +36,7 @@ public class AgentRestRequestDetails {
 
     public static RequestDetails gitPullRequestDetails(String taskId) {
         return RequestDetails.builder()
-                .requestMethod(RequestMethod.PUT)
+                .requestMethod(AgentRequestMethod.PUT)
                 .jsonPayload("")
                 .uriEndpoint(GIT_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId))
                 .build();
@@ -48,7 +44,7 @@ public class AgentRestRequestDetails {
 
     public static RequestDetails getSystemLoadRequestDetails() {
         return RequestDetails.builder()
-                .requestMethod(RequestMethod.GET)
+                .requestMethod(AgentRequestMethod.GET)
                 .jsonPayload("")
                 .uriEndpoint(SYSTEM_LOAD)
                 .build();
@@ -56,25 +52,25 @@ public class AgentRestRequestDetails {
 
     public static RequestDetails getPingRequestDetails() {
         return RequestDetails.builder()
-                .requestMethod(RequestMethod.GET)
+                .requestMethod(AgentRequestMethod.GET)
                 .jsonPayload("")
                 .uriEndpoint(SYSTEM_PING)
                 .build();
     }
 
     public static RequestDetails getFtpGetFileRequestDetaild(String file, String taskId) {
-        return getFtpRequestDetails(RequestMethod.GET, file, taskId);
+        return getFtpRequestDetails(AgentRequestMethod.GET, file, taskId);
     }
 
     /**
      * Jako body dane binarne z Content-Type: application/octet-stream
      */
     public static RequestDetails getFtpPostFileRequestDetaild(String file, String taskId) {
-        return getFtpRequestDetails(RequestMethod.POST, file, taskId);
+        return getFtpRequestDetails(AgentRequestMethod.POST, file, taskId);
     }
 
     public static RequestDetails getFtpDeleteFileRequestDetaild(String file, String taskId) {
-        return getFtpRequestDetails(RequestMethod.DELETE, file, taskId);
+        return getFtpRequestDetails(AgentRequestMethod.DELETE, file, taskId);
     }
 
     public static RequestDetails getTaskStartRequestDetails(String taskId) {
@@ -101,7 +97,7 @@ public class AgentRestRequestDetails {
         return getTaskRequestDetails(TaskCommand.TASK_COMMAND_DELETE, taskId);
     }
 
-    private static RequestDetails getFtpRequestDetails(RequestMethod requestMethod, String file, String taskId) {
+    private static RequestDetails getFtpRequestDetails(AgentRequestMethod requestMethod, String file, String taskId) {
         return RequestDetails.builder()
                 .requestMethod(requestMethod)
                 .jsonPayload("")
@@ -111,7 +107,7 @@ public class AgentRestRequestDetails {
 
     private static RequestDetails getTaskRequestDetails(TaskCommand taskCommand, String taskId) {
         return RequestDetails.builder()
-                .requestMethod(RequestMethod.POST)
+                .requestMethod(AgentRequestMethod.POST)
                 .uriEndpoint(TASK_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId))
                 .jsonPayload(taskCommand.getJsonString())
                 .build();

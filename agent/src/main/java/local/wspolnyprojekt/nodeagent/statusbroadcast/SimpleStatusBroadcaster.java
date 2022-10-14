@@ -1,24 +1,38 @@
 package local.wspolnyprojekt.nodeagent.statusbroadcast;
 
-import local.wspolnyprojekt.nodeagent.task.TaskStatus;
+import local.wspolnyprojekt.nodeagent.communicationqueues.TaskMessageService;
+import local.wspolnyprojekt.nodeagent.task.Task;
+import local.wspolnyprojekt.nodeagent.task.state.TaskState;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
-// TODO Na razie testowa implementacja naiwna, docelowo kolejkowanie i asynchroniczna wysyłka aby wywołanie metody 'broadcast*' nie było blokujące
-@Component
+@Slf4j
+@Service
+@ApplicationScope
+@RequiredArgsConstructor
 public class SimpleStatusBroadcaster implements StatusBroadcaster {
-    List<SoutStatusListener> statusListeners;
+    List<StatusListener> statusListeners;
+    private final TaskMessageService taskMessageService;
 
     /**
      * Na potrzeby testowania dodany listener wypisujący na standardowe wyjście
      */
-    private SimpleStatusBroadcaster() {
-        statusListeners = List.of(new SoutStatusListener());
+    @PostConstruct
+    void init() {
+        log.info("PostConstruct");
+        statusListeners = List.of(new SoutStatusListener(), new ServerStatusListener(taskMessageService));
     }
 
     @Override
-    public void broadcastStatusChange(String taskId, TaskStatus taskStatus) {
-        statusListeners.forEach(listener -> listener.receiveStatus(taskId,taskStatus));
+    public void broadcastStatusChange(Task task, TaskState taskState) {
+        log.info("{} {}",task,taskState);
+        statusListeners.forEach(listener -> listener.receiveStatus(task, taskState));
     }
 }
