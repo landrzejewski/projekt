@@ -1,6 +1,7 @@
 package local.wspolnyprojekt.nodeagent.communicationqueues;
 
 import local.wspolnyprojekt.nodeagent.server.ServerCommunicationService;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class MessageExportDaemon {
             return;
         }
 
-        if (!taskMessageService.isStatusEmpty()) {
+        if (!taskMessageService.isStatusQueueEmpty()) {
             Optional<TaskStatusMessage> entry;
             while (!(entry = taskMessageService.getStatusMessage()).isEmpty()) {
 //                exportLogEntry(entry.get());
@@ -32,9 +33,9 @@ public class MessageExportDaemon {
             }
         }
 
-        if (!taskMessageService.isLogEmpty()) {
-            Optional<LogEntity> entry;
-            while (!(entry = taskMessageService.getLog()).isEmpty()) {
+        if (!taskMessageService.isLogQueueEmpty()) {
+            Optional<TaskLogMessage> entry;
+            while (!(entry = taskMessageService.getLogMessage()).isEmpty()) {
 //                exportLogEntry(entry.get());
                 serverCommunicationService.sendTaskLog(entry.get());
             }
@@ -42,7 +43,7 @@ public class MessageExportDaemon {
 
     }
 
-    private void exportLogEntry(LogEntity logEntity) {
-        log.info("Export log: {}", logEntity);
+    private void exportLogEntry(TaskLogMessage taskLogMessage) {
+        log.info("Export log: {}", taskLogMessage);
     }
 }

@@ -33,7 +33,7 @@ public class DockerService {
             task.setStatus(new TaskStateDone());
         } else {
             log.error("{} BUSY",task.getTaskId());
-            throw new RuntimeException("BUSY");
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
         }
     }
 

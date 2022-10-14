@@ -1,5 +1,6 @@
 package local.wspolnyprojekt.nodeagent.communicationqueues;
 
+import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 @ApplicationScope
 public class TaskMessageService implements MessageService {
-    private static final Queue<LogEntity> logs = new ConcurrentLinkedQueue<>();
+    private static final Queue<TaskLogMessage> logs = new ConcurrentLinkedQueue<>();
     private static final Queue<TaskStatusMessage> taskStatus = new ConcurrentLinkedQueue<>();
 
     @Override
-    public void save(LogEntity logEntry) {
+    public void save(TaskLogMessage logEntry) {
         logs.add(logEntry);
     }
 
@@ -28,17 +29,17 @@ public class TaskMessageService implements MessageService {
     }
 
     @Override
-    public boolean isLogEmpty() {
+    public boolean isLogQueueEmpty() {
         return logs.isEmpty();
     }
 
     @Override
-    public boolean isStatusEmpty() {
+    public boolean isStatusQueueEmpty() {
         return taskStatus.isEmpty();
     }
 
     @Override
-    public Optional<LogEntity> getLog() {
+    public Optional<TaskLogMessage> getLogMessage() {
         return Optional.ofNullable(logs.poll());
     }
 

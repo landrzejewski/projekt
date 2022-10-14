@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagent.shellcommand;
 
-import local.wspolnyprojekt.nodeagent.communicationqueues.LogEntity;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagent.communicationqueues.TaskMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class LogPersistenceService implements OutputPersistence{
     @Override
     public void save(String taskid, String text) {
         fileOutputPersistence.save(taskid,text);
-        taskMessageService.save(new LogEntity(LocalDateTime.now().toString(),taskid,text));
+        taskMessageService.save(new TaskLogMessage(LocalDateTime.now().toString(),taskid,text));
     }
 
 }

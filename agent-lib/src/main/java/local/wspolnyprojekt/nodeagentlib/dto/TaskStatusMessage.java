@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Value
 public class TaskStatusMessage implements JsonString {
-    String timestamp = LocalDateTime.now().toString();
+    String timestamp;
     String taskId;
     TaskStatus taskStatus;
     String description;

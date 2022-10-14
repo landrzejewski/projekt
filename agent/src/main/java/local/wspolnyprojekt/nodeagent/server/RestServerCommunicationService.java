@@ -3,9 +3,8 @@ package local.wspolnyprojekt.nodeagent.server;
 import local.wspolnyprojekt.nodeagent.configuration.ConfigurationPersistence;
 import local.wspolnyprojekt.nodeagent.configuration.NodeConfigurationProperties;
 import local.wspolnyprojekt.nodeagent.configuration.NodeInternetInterface;
-import local.wspolnyprojekt.nodeagent.communicationqueues.LogEntity;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.NodeRegistrationEntity;
-import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +30,8 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     private boolean registered = false;
 
     @Override
-    public void sendTaskLog(LogEntity logEntity) {
-//        sendRestPostRequest(nodeConfigurationProperties.getTaskLogUrl(logEntity.getSenderId()), logEntity.getJsonString());
+    public void sendTaskLog(TaskLogMessage taskLogMessage) {
+        sendRestPostRequest(nodeConfigurationProperties.getTaskLogUrl(taskLogMessage.getSenderId()), taskLogMessage.getJsonString());
     }
 
     @Override
