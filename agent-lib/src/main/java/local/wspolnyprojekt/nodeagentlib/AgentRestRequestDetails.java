@@ -16,7 +16,7 @@ public class AgentRestRequestDetails {
 
     private static RequestDetails gitCredentialsRequestDetails(GitCredentials gitCredentials) {
         return RequestDetails.builder()
-                .requestMethod(AgentRequestMethod.POST)
+                .requestMethod(NodeHttpRequestMethod.POST)
                 .jsonPayload(gitCredentials.getJsonString())
                 .uriEndpoint(GIT_CREDENTIALS_ENDPOINT)
                 .build();
@@ -28,7 +28,7 @@ public class AgentRestRequestDetails {
 
     private static RequestDetails gitCloneRequestDetails(GitResource gitResource, String taskId) {
         return RequestDetails.builder()
-                .requestMethod(AgentRequestMethod.POST)
+                .requestMethod(NodeHttpRequestMethod.POST)
                 .jsonPayload(gitResource.getJsonString())
                 .uriEndpoint(GIT_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId))
                 .build();
@@ -36,7 +36,7 @@ public class AgentRestRequestDetails {
 
     public static RequestDetails gitPullRequestDetails(String taskId) {
         return RequestDetails.builder()
-                .requestMethod(AgentRequestMethod.PUT)
+                .requestMethod(NodeHttpRequestMethod.PUT)
                 .jsonPayload("")
                 .uriEndpoint(GIT_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId))
                 .build();
@@ -44,7 +44,7 @@ public class AgentRestRequestDetails {
 
     public static RequestDetails getSystemLoadRequestDetails() {
         return RequestDetails.builder()
-                .requestMethod(AgentRequestMethod.GET)
+                .requestMethod(NodeHttpRequestMethod.GET)
                 .jsonPayload("")
                 .uriEndpoint(SYSTEM_LOAD)
                 .build();
@@ -52,25 +52,25 @@ public class AgentRestRequestDetails {
 
     public static RequestDetails getPingRequestDetails() {
         return RequestDetails.builder()
-                .requestMethod(AgentRequestMethod.GET)
+                .requestMethod(NodeHttpRequestMethod.GET)
                 .jsonPayload("")
                 .uriEndpoint(SYSTEM_PING)
                 .build();
     }
 
     public static RequestDetails getFtpGetFileRequestDetaild(String file, String taskId) {
-        return getFtpRequestDetails(AgentRequestMethod.GET, file, taskId);
+        return getFtpRequestDetails(NodeHttpRequestMethod.GET, file, taskId);
     }
 
     /**
      * Jako body dane binarne z Content-Type: application/octet-stream
      */
     public static RequestDetails getFtpPostFileRequestDetaild(String file, String taskId) {
-        return getFtpRequestDetails(AgentRequestMethod.POST, file, taskId);
+        return getFtpRequestDetails(NodeHttpRequestMethod.POST, file, taskId);
     }
 
     public static RequestDetails getFtpDeleteFileRequestDetaild(String file, String taskId) {
-        return getFtpRequestDetails(AgentRequestMethod.DELETE, file, taskId);
+        return getFtpRequestDetails(NodeHttpRequestMethod.DELETE, file, taskId);
     }
 
     public static RequestDetails getTaskStartRequestDetails(String taskId) {
@@ -97,7 +97,7 @@ public class AgentRestRequestDetails {
         return getTaskRequestDetails(TaskCommand.TASK_COMMAND_DELETE, taskId);
     }
 
-    private static RequestDetails getFtpRequestDetails(AgentRequestMethod requestMethod, String file, String taskId) {
+    private static RequestDetails getFtpRequestDetails(NodeHttpRequestMethod requestMethod, String file, String taskId) {
         return RequestDetails.builder()
                 .requestMethod(requestMethod)
                 .jsonPayload("")
@@ -107,7 +107,7 @@ public class AgentRestRequestDetails {
 
     private static RequestDetails getTaskRequestDetails(TaskCommand taskCommand, String taskId) {
         return RequestDetails.builder()
-                .requestMethod(AgentRequestMethod.POST)
+                .requestMethod(NodeHttpRequestMethod.POST)
                 .uriEndpoint(TASK_ENDPOINT.replace("{" + TASKID_PATH_VARIABLE + "}", taskId))
                 .jsonPayload(taskCommand.getJsonString())
                 .build();

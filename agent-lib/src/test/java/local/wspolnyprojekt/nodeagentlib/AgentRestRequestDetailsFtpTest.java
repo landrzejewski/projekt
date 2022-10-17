@@ -1,6 +1,6 @@
 package local.wspolnyprojekt.nodeagentlib;
 
-import local.wspolnyprojekt.nodeagentlib.dto.AgentRequestMethod;
+import local.wspolnyprojekt.nodeagentlib.dto.NodeHttpRequestMethod;
 import local.wspolnyprojekt.nodeagentlib.dto.RequestDetails;
 import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ class AgentRestRequestDetailsFtpTest {
     @Test
     void shouldCreateFtpGetRequestDetails() {
         RequestDetails requestDetails = getFtpGetFileRequestDetaild(file, taskId);
-        assertThat(requestDetails.getRequestMethod()).isEqualTo(AgentRequestMethod.GET);
+        assertThat(requestDetails.getRequestMethod()).isEqualTo(NodeHttpRequestMethod.GET);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
         assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.FTP_ENDPOINT.replace("{" + RestEndpoints.TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + RestEndpoints.FILENAME_PATH_VARIABLE + "}", file));
     }
@@ -28,7 +28,7 @@ class AgentRestRequestDetailsFtpTest {
     @Test
     void shouldCreateFtpPostRequestDetails() {
         RequestDetails requestDetails = getFtpPostFileRequestDetaild(file, taskId);
-        assertThat(requestDetails.getRequestMethod()).isEqualTo(AgentRequestMethod.POST);
+        assertThat(requestDetails.getRequestMethod()).isEqualTo(NodeHttpRequestMethod.POST);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
         assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.FTP_ENDPOINT.replace("{" + RestEndpoints.TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + RestEndpoints.FILENAME_PATH_VARIABLE + "}", file));
     }
@@ -36,7 +36,7 @@ class AgentRestRequestDetailsFtpTest {
     @Test
     void shouldCreateFtpDeleteRequestDetails() {
         RequestDetails requestDetails = getFtpDeleteFileRequestDetaild(file, taskId);
-        assertThat(requestDetails.getRequestMethod()).isEqualTo(AgentRequestMethod.DELETE);
+        assertThat(requestDetails.getRequestMethod()).isEqualTo(NodeHttpRequestMethod.DELETE);
         assertThat(requestDetails.getJsonPayload()).isEmpty();
         assertThat(requestDetails.getUriEndpoint()).isEqualTo(RestEndpoints.FTP_ENDPOINT.replace("{" + RestEndpoints.TASKID_PATH_VARIABLE + "}", taskId).replace("{*" + RestEndpoints.FILENAME_PATH_VARIABLE + "}", file));
     }

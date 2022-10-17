@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class RequestDetails {
-    AgentRequestMethod requestMethod;
+    NodeHttpRequestMethod requestMethod;
     String uriEndpoint;
     String jsonPayload;
 }
