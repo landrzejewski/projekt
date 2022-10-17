@@ -18,32 +18,33 @@ public class MessageExportDaemon {
     private final TaskMessageService taskMessageService;
     private final ServerCommunicationService serverCommunicationService;
 
+
+    @Scheduled(fixedDelay = 100, timeUnit = TimeUnit.MILLISECONDS)
+    void exportTaskStatus() {
+        if(!serverCommunicationService.isRegistered())
+            return;
+        if (!taskMessageService.isStatusQueueEmpty()) {
+            Optional<TaskStatusMessage> entry;
+            while ((entry = taskMessageService.getStatusMessage()).isPresent()) {
+                serverCommunicationService.sendTaskStatus(entry.get());
+            }
+        }
+    }
+
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
-    void exportLogs() {
+    void exportTaskLogs() {
         if(!serverCommunicationService.isRegistered()) {
             serverCommunicationService.registerAgent();
             return;
         }
 
-        if (!taskMessageService.isStatusQueueEmpty()) {
-            Optional<TaskStatusMessage> entry;
-            while (!(entry = taskMessageService.getStatusMessage()).isEmpty()) {
-//                exportLogEntry(entry.get());
-                serverCommunicationService.sendTaskStatus(entry.get());
-            }
-        }
-
         if (!taskMessageService.isLogQueueEmpty()) {
             Optional<TaskLogMessage> entry;
-            while (!(entry = taskMessageService.getLogMessage()).isEmpty()) {
-//                exportLogEntry(entry.get());
+            while ((entry = taskMessageService.getLogMessage()).isPresent()) {
                 serverCommunicationService.sendTaskLog(entry.get());
             }
         }
 
     }
 
-    private void exportLogEntry(TaskLogMessage taskLogMessage) {
-        log.info("Export log: {}", taskLogMessage);
-    }
 }

@@ -68,7 +68,7 @@ public class TasksService {
     }
 
     public void clone(GitResource gitResource, String taskid) {
-        Task task = new Task(statusBroadcaster,workspaceUtils,taskid);
+        Task task = new Task(statusBroadcaster, workspaceUtils, taskid);
         try {
             addTask(task);
             gitClient.clone(gitResource, task);
@@ -103,7 +103,10 @@ public class TasksService {
     }
 
     public TaskStatus getStatus(String taskId) {
-        return TaskStatus.TASK_STATUS_UNKNOWN; // TODO Zaimplementować, na razie puste.
+        if (!hasTask(taskId)) {
+            return TaskStatus.TASK_STATUS_NULL;
+        }
+        return getTask(taskId).getStatus().getDtoTaskStatus();
     }
 
     public boolean pull(String taskid) throws GitAPIException, IOException {
