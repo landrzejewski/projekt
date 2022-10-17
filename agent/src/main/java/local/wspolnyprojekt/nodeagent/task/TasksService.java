@@ -73,7 +73,7 @@ public class TasksService {
             addTask(task);
             gitClient.clone(gitResource, task);
         } catch (Exception e) {
-            task.setStatus(new TaskStateFail());
+            task.setStatus(new TaskStateFail(), e.getMessage());
         }
     }
 
@@ -109,7 +109,7 @@ public class TasksService {
         return getTask(taskId).getStatus().getDtoTaskStatus();
     }
 
-    public boolean pull(String taskid) throws GitAPIException, IOException {
-        return gitClient.pull(getTask(taskid));
+    public void pull(String taskid) throws GitAPIException, IOException {
+        gitClient.pull(getTask(taskid));
     }
 }

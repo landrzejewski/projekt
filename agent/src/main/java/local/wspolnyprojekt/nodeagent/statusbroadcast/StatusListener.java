@@ -5,5 +5,5 @@ import local.wspolnyprojekt.nodeagent.task.state.TaskState;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 
 public interface StatusListener {
-    void receiveStatus(Task task, TaskState state) ;
+    void receiveStatus(Task task, String description) ;
 }

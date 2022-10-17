@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.web.bind.annotation.*;
+
 import java.io.IOException;
+
 import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASKID_PATH_VARIABLE;
 
 @Slf4j
@@ -27,12 +29,12 @@ public class GitApi {
 
     @PostMapping(RestEndpoints.GIT_ENDPOINT)
     void cloneGitRepository(@RequestBody GitResource gitResource, @PathVariable(name = TASKID_PATH_VARIABLE) String taskid) {
-        tasksService.clone(gitResource,taskid);
+        tasksService.clone(gitResource, taskid);
     }
 
     @PutMapping(RestEndpoints.GIT_ENDPOINT)
-    boolean pullAndCheckoutGitRepository(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid) throws GitAPIException, IOException {
-        return tasksService.pull(taskid);
+    void pullAndCheckoutGitRepository(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid) throws GitAPIException, IOException {
+        tasksService.pull(taskid);
     }
 
 }

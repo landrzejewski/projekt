@@ -2,6 +2,7 @@ package local.wspolnyprojekt.nodeagent.git;
 
 import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateAllocated;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateFail;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateReady;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
@@ -24,7 +25,7 @@ public class JGitClient implements GitClient {
 
     @Async
     @Override
-    public void clone(GitResource gitResource, Task task) throws GitAPIException {
+    public void clone(GitResource gitResource, Task task) {
         if (task.getSemaphore().tryAcquire()) {
             task.setStatus(new TaskStateAllocated());
             var gitCommand = Git.cloneRepository()
@@ -34,18 +35,33 @@ public class JGitClient implements GitClient {
             if (credentials.getGitCredentials() != null) {
                 gitCommand = gitCommand.setCredentialsProvider(credentials.getGitCredentials());
             }
-            gitCommand.call().close();
-            task.setStatus(new TaskStateReady());
-            task.getSemaphore().release();
+            try {
+                gitCommand.call().close();
+                task.setStatus(new TaskStateReady());
+            } catch (Exception e) {
+                task.setStatus(new TaskStateFail(), e.getMessage());
+            } finally {
+                task.getSemaphore().release();
+            }
         } else {
             throw new RuntimeException("BUSY");
         }
     }
 
     @Override
-    public boolean pull(Task task) throws IOException, GitAPIException {
-        try (var gitCommand = Git.open(task.getWorkspaceAsFile())) {
-            return gitCommand.pull().call().isSuccessful();
+    public void pull(Task task) {
+        if (task.getSemaphore().tryAcquire()) {
+            task.setStatus(new TaskStateAllocated());
+            try (var gitCommand = Git.open(task.getWorkspaceAsFile())) {
+                gitCommand.pull().call().isSuccessful();
+                task.setStatus(new TaskStateReady());
+            } catch (Exception e) {
+                task.setStatus(new TaskStateFail(), e.getMessage());
+            } finally {
+                task.getSemaphore().release();
+            }
+        } else {
+            throw new RuntimeException("BUSY");
         }
     }
 

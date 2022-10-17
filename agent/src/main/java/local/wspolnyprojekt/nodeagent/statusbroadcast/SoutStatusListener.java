@@ -9,7 +9,7 @@ import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
  */
 public class SoutStatusListener implements StatusListener {
     @Override
-    public void receiveStatus(Task task, TaskState state) {
-        System.out.println(task.getTaskId() + " -> " + state.getDtoTaskStatus().toString());
+    public void receiveStatus(Task task, String description) {
+        System.out.println(task.getTaskId() + " -> " + task.getStatus().getDtoTaskStatus().toString() + ": "+description);
     }
 }

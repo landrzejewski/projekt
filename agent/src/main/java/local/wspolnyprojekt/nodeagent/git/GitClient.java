@@ -8,9 +8,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.IOException;
 
 public interface GitClient {
-    void clone(GitResource gitResource, Task task) throws GitAPIException;
+    void clone(GitResource gitResource, Task task);
 
-    boolean pull(Task task) throws IOException, GitAPIException;
+    void pull(Task task);
 
     void setCredentials(String user, String password);
 

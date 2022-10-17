@@ -5,5 +5,5 @@ import local.wspolnyprojekt.nodeagent.task.state.TaskState;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 
 public interface StatusBroadcaster {
-    void broadcastStatusChange(Task task, TaskState taskState);
+    void broadcastStatusChange(Task task, String description);
 }

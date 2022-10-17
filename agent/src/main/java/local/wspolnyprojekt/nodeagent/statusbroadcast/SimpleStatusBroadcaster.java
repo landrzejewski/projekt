@@ -31,8 +31,8 @@ public class SimpleStatusBroadcaster implements StatusBroadcaster {
     }
 
     @Override
-    public void broadcastStatusChange(Task task, TaskState taskState) {
-        log.info("{} {}",task,taskState);
-        statusListeners.forEach(listener -> listener.receiveStatus(task, taskState));
+    public void broadcastStatusChange(Task task, String description) {
+        log.info("{} {}",task,task.getStatus().getDtoTaskStatus());
+        statusListeners.forEach(listener -> listener.receiveStatus(task, description));
     }
 }

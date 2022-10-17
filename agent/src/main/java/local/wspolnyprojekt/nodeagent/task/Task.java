@@ -29,9 +29,13 @@ public class Task {
         return workspaceUtils.getWorkspaceDirAsFile(taskId);
     }
 
-    public void setStatus(TaskState status) {
+    public void setStatus(TaskState status, String description) {
         this.status = status;
-        statusListener.broadcastStatusChange(this, status);
+        statusListener.broadcastStatusChange(this, description);
+    }
+
+    public void setStatus(TaskState status) {
+        setStatus(status,"");
     }
 
  }

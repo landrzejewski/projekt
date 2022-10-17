@@ -17,8 +17,8 @@ public class ServerStatusListener implements StatusListener {
     private final TaskMessageService taskMessageService;
 
     @Override
-    public void receiveStatus(Task task, TaskState state) {
+    public void receiveStatus(Task task, String description) {
         //TODO Na razie czas leci jako LocalDateTime->String - docelowo ma lecieć w jakimś konkretnym formacie albo jako "podobiekt"?
-        taskMessageService.save(new TaskStatusMessage(LocalDateTime.now().toString(), task.getTaskId(), state.getDtoTaskStatus(), ""));
+        taskMessageService.save(new TaskStatusMessage(LocalDateTime.now().toString(), task.getTaskId(), task.getStatus().getDtoTaskStatus(), description));
     }
 }
