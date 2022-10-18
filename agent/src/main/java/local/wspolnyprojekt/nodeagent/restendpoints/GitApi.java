@@ -34,7 +34,7 @@ public class GitApi {
 
     @PutMapping(RestEndpoints.GIT_ENDPOINT)
     void pullAndCheckoutGitRepository(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid) throws GitAPIException, IOException {
-        tasksService.pull(taskid);
+        tasksService.pull(tasksService.getTask(taskid));
     }
 
 }

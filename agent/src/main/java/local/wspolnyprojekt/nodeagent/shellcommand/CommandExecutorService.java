@@ -21,9 +21,9 @@ public class CommandExecutorService {
     private final LogPersistenceService logPersistenceService;
     private final WorkspaceUtils workspaceUtils;
 
-    public void executeCommand(ShellCommand shellCommand, String taskid) {
-        log.info("task: {} command: {}", taskid, shellCommand);
-        log.info("workspace: {}", workspaceUtils.getWorkspaceDirAsFile(taskid).getAbsolutePath());
+    public int executeCommand(ShellCommand shellCommand, String taskid) {
+//        log.info("task: {} command: {}", taskid, shellCommand);
+//        log.info("workspace: {}", workspaceUtils.getWorkspaceDirAsFile(taskid).getAbsolutePath());
         try {
             var process = new ProcessBuilder()
                     .directory(workspaceUtils.getWorkspaceDirAsFile(taskid))
@@ -35,12 +35,13 @@ public class CommandExecutorService {
             var future = Executors.newSingleThreadExecutor().submit(outputGrabber);
             int exitCode = process.waitFor();
             var futureResult = future.get();
-            log.info("exit: {} future: {}", exitCode, futureResult);
+//            log.info("exit: {} future: {}", exitCode, futureResult);
+            return exitCode;
         } catch (Exception exception) {
             // TODO Obsługa poszczególnych klas wyjątków - na razie jest "aby ruszyło"
             System.out.println(exception.getMessage());
+            return -1;
         }
-
     }
 
     private static List<String> createCommand(ShellCommand shellCommand) {

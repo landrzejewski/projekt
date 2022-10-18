@@ -2,6 +2,7 @@ package local.wspolnyprojekt.nodeagent.docker;
 
 import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateDone;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateFail;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateRunning;
 import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
@@ -28,9 +29,13 @@ public class DockerService {
     public void buildAndRun(Task task) {
         if (task.getSemaphore().tryAcquire()) {
             task.setStatus(new TaskStateRunning());
-            executeDockerComposeCommand(new String[]{"up", "--build"}, task.getTaskId());
+            var exitCode = executeDockerComposeCommand(new String[]{"up", "--build"}, task);
             task.getSemaphore().release();
-            task.setStatus(new TaskStateDone());
+            if (exitCode == 0) {
+                task.setStatus(new TaskStateDone());
+            } else {
+                task.setStatus(new TaskStateFail(),"details in log");
+            }
         } else {
             log.error("{} BUSY",task.getTaskId());
             throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
@@ -38,39 +43,39 @@ public class DockerService {
     }
 
     @Async
-    public void down(String taskid) {
-        executeDockerComposeCommand(new String[]{"down"}, taskid);
+    public void down(Task task) {
+        var exitCode = executeDockerComposeCommand(new String[]{"down"}, task);
     }
 
-    public InputStreamResource getLog(String taskid) throws FileNotFoundException {
-        return workspaceUtils.getFileAsInputStreamResource(taskid, "output.log");
+    public InputStreamResource getLog(Task task) throws FileNotFoundException {
+        return workspaceUtils.getFileAsInputStreamResource(task.getTaskId(), "output.log");
     }
 
     @Async
-    public void cleanup(String taskid) {
-        executeDockerCommand(new String[]{"volume", "prune", "-f"}, taskid);
-        executeDockerCommand(new String[]{"builder", "prune", "-f"}, taskid);
-        executeDockerCommand(new String[]{"image", "prune", "--all", "-f"}, taskid);
+    public void cleanup(Task task) {
+        executeDockerCommand(new String[]{"volume", "prune", "-f"}, task);
+        executeDockerCommand(new String[]{"builder", "prune", "-f"}, task);
+        executeDockerCommand(new String[]{"image", "prune", "--all", "-f"}, task);
     }
 
-    private void executeDockerComposeCommand(String[] args, String taskid) {
+    private int executeDockerComposeCommand(String[] args, Task task) {
         ShellCommand shellCommand = new ShellCommand();
         shellCommand.setCommand("docker-compose");
         shellCommand.setArgs(args);
         shellCommand.setTimeoutInSeconds(-1);
-        commandExecutorService.executeCommand(shellCommand, taskid);
+        return commandExecutorService.executeCommand(shellCommand, task.getTaskId());
     }
 
-    private void executeDockerCommand(String[] args, String taskid) {
+    private int executeDockerCommand(String[] args, Task task) {
         ShellCommand shellCommand = new ShellCommand();
         shellCommand.setCommand("docker");
         shellCommand.setArgs(args);
         shellCommand.setTimeoutInSeconds(-1);
-        commandExecutorService.executeCommand(shellCommand, taskid);
+        return commandExecutorService.executeCommand(shellCommand, task.getTaskId());
     }
 
     @Async
-    public void delete(String taskId) {
-        workspaceUtils.deleteWorkspace(taskId);
+    public void delete(Task task) {
+        workspaceUtils.deleteWorkspace(task.getTaskId());
     }
 }

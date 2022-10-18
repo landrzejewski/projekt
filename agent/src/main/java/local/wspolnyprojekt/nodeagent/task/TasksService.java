@@ -35,15 +35,16 @@ public class TasksService {
     Map<String, Task> tasks = synchronizedMap(new HashMap<>());
 
     public ResponseEntity executeCommand(String taskId, TaskCommand taskCommand) throws FileNotFoundException {
+
         return switch (taskCommand) {
-            case TASK_COMMAND_START -> start(taskId);
-            case TASK_COMMAND_STOP -> down(taskId);
-            case TASK_COMMAND_CLEANUP -> cleanup(taskId);
+            case TASK_COMMAND_START -> start(getTask(taskId));
+            case TASK_COMMAND_STOP -> down(getTask(taskId));
+            case TASK_COMMAND_CLEANUP -> cleanup(getTask(taskId));
             case TASK_COMMAND_STATUS -> ResponseEntity.ok(getStatus(taskId));
             case TASK_COMMAND_LOG -> ResponseEntity.accepted()
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(getLog(taskId));
-            case TASK_COMMAND_DELETE -> delete(taskId);
+                    .body(getLog(getTask(taskId)));
+            case TASK_COMMAND_DELETE -> delete(getTask(taskId));
         };
 
     }
@@ -63,43 +64,48 @@ public class TasksService {
         tasks.put(task.getTaskId(), task);
     }
 
-    public void deleteTask(String taskId) {
-        tasks.remove(taskId);
+    public void deleteTask(Task task) {
+        tasks.remove(task);
     }
 
     public void clone(GitResource gitResource, String taskid) {
-        Task task = new Task(statusBroadcaster, workspaceUtils, taskid);
-        try {
+        Task task;
+        if (!hasTask(taskid)) {
+            task = new Task(statusBroadcaster, workspaceUtils, taskid);
             addTask(task);
+        } else {
+            task = getTask(taskid);
+        }
+        if (task.getSemaphore().tryAcquire()) {
             gitClient.clone(gitResource, task);
-        } catch (Exception e) {
-            task.setStatus(new TaskStateFail(), e.getMessage());
+            task.getSemaphore().release();
+        } else {
+            throw new RuntimeException("BUSY");
         }
     }
 
-    public ResponseEntity start(String taskid) {
-        Task task = getTask(taskid);
+    public ResponseEntity start(Task task) {
         dockerService.buildAndRun(task);
         return ResponseEntity.ok().build(); // TODO
     }
 
-    public ResponseEntity down(String taskid) {
-        dockerService.down(taskid);
+    public ResponseEntity down(Task task) {
+        dockerService.down(task);
         return ResponseEntity.ok().build(); // TODO
     }
 
-    public ResponseEntity cleanup(String taskid) {
-        dockerService.cleanup(taskid);
+    public ResponseEntity cleanup(Task task) {
+        dockerService.cleanup(task);
         return ResponseEntity.ok().build(); // TODO
     }
 
-    public ResponseEntity delete(String taskId) {
-        dockerService.delete(taskId);
+    public ResponseEntity delete(Task task) {
+        dockerService.delete(task);
         return ResponseEntity.ok().build(); // TODO
     }
 
-    public InputStreamResource getLog(String taskid) throws FileNotFoundException {
-        return dockerService.getLog(taskid);
+    public InputStreamResource getLog(Task task) throws FileNotFoundException {
+        return dockerService.getLog(task);
     }
 
     public TaskStatus getStatus(String taskId) {
@@ -109,7 +115,12 @@ public class TasksService {
         return getTask(taskId).getStatus().getDtoTaskStatus();
     }
 
-    public void pull(String taskid) throws GitAPIException, IOException {
-        gitClient.pull(getTask(taskid));
+    public void pull(Task task) {
+        if (task.getSemaphore().tryAcquire()) {
+            gitClient.pull(task);
+            task.getSemaphore().release();
+        } else {
+            throw new RuntimeException("BUSY");
+        }
     }
 }
