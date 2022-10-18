@@ -64,18 +64,21 @@ public class TasksService {
         tasks.put(task.getTaskId(), task);
     }
 
+    public void addTask(String taskId) {
+        addTask(new Task(statusBroadcaster, workspaceUtils, taskId));
+    }
+
     public void deleteTask(Task task) {
-        tasks.remove(task);
+        task.setStatus(new TaskStateNull());
+        tasks.remove(task.getTaskId());
     }
 
     public void clone(GitResource gitResource, String taskid) {
         Task task;
         if (!hasTask(taskid)) {
-            task = new Task(statusBroadcaster, workspaceUtils, taskid);
-            addTask(task);
-        } else {
-            task = getTask(taskid);
+            addTask(taskid);
         }
+        task = getTask(taskid);
         if (task.getSemaphore().tryAcquire()) {
             gitClient.clone(gitResource, task);
             task.getSemaphore().release();
@@ -100,7 +103,11 @@ public class TasksService {
     }
 
     public ResponseEntity delete(Task task) {
-        dockerService.delete(task);
+        if(task.getStatus().getDtoTaskStatus().equals(TaskStatus.TASK_STATUS_DELETED)) { // Ponowne usunięcie "zwalnia" ID
+            deleteTask(task);
+        } else {
+            dockerService.delete(task);
+        }
         return ResponseEntity.ok().build(); // TODO
     }
 
@@ -122,5 +129,15 @@ public class TasksService {
         } else {
             throw new RuntimeException("BUSY");
         }
+    }
+
+    public int getNumberOfTasks() {
+        return tasks.size();
+    }
+
+    public int getNumberOfRunningTasks() {
+        return (int) tasks.values().stream()
+                .filter(task -> task.getStatus().getDtoTaskStatus().equals(TaskStatus.TASK_STATUS_RUNNING))
+                .count();
     }
 }

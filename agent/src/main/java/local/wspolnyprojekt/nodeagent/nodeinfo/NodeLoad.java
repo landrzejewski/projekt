@@ -1,6 +1,7 @@
 package local.wspolnyprojekt.nodeagent.nodeinfo;
 
 import com.sun.management.OperatingSystemMXBean;
+import local.wspolnyprojekt.nodeagent.task.TasksService;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.lang.management.ManagementFactory;
 public class NodeLoad {
 
     private final WorkspaceUtils workspaceUtils;
+    private final TasksService tasksService;
 
     public local.wspolnyprojekt.nodeagentlib.dto.NodeLoad getLoadData() {
         local.wspolnyprojekt.nodeagentlib.dto.NodeLoad nodeLoad = new local.wspolnyprojekt.nodeagentlib.dto.NodeLoad();
@@ -30,6 +32,8 @@ public class NodeLoad {
         nodeLoad.setFreeSwapSpace(sysinfo.getFreeSwapSpaceSize());
         nodeLoad.setTotalDiskSpace(workspace.getTotalSpace());
         nodeLoad.setAvailableDiskSpace(workspace.getUsableSpace());
+        nodeLoad.setTotalTasks(tasksService.getNumberOfTasks());
+        nodeLoad.setActiveTasts(tasksService.getNumberOfRunningTasks());
         return nodeLoad;
     }
 

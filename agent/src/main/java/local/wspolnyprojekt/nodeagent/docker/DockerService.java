@@ -1,12 +1,11 @@
 package local.wspolnyprojekt.nodeagent.docker;
 
 import local.wspolnyprojekt.nodeagent.task.Task;
-import local.wspolnyprojekt.nodeagent.task.state.TaskStateDone;
-import local.wspolnyprojekt.nodeagent.task.state.TaskStateFail;
-import local.wspolnyprojekt.nodeagent.task.state.TaskStateRunning;
+import local.wspolnyprojekt.nodeagent.task.state.*;
 import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -34,17 +33,28 @@ public class DockerService {
             if (exitCode == 0) {
                 task.setStatus(new TaskStateDone());
             } else {
-                task.setStatus(new TaskStateFail(),"details in log");
+                task.setStatus(new TaskStateFail(), "details in log");
             }
         } else {
-            log.error("{} BUSY",task.getTaskId());
+            log.error("{} BUSY", task.getTaskId());
             throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
         }
     }
 
     @Async
     public void down(Task task) {
-        var exitCode = executeDockerComposeCommand(new String[]{"down"}, task);
+        if (task.getSemaphore().tryAcquire()) {
+            var exitCode = executeDockerComposeCommand(new String[]{"down"}, task);
+            if (exitCode == 0) {
+                task.setStatus(new TaskStateStopped());
+            } else {
+                task.setStatus(new TaskStateFail());
+            }
+            task.getSemaphore().release();
+        } else {
+            log.error("{} BUSY", task.getTaskId());
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+        }
     }
 
     public InputStreamResource getLog(Task task) throws FileNotFoundException {
@@ -53,9 +63,27 @@ public class DockerService {
 
     @Async
     public void cleanup(Task task) {
-        executeDockerCommand(new String[]{"volume", "prune", "-f"}, task);
-        executeDockerCommand(new String[]{"builder", "prune", "-f"}, task);
-        executeDockerCommand(new String[]{"image", "prune", "--all", "-f"}, task);
+        if (task.getSemaphore().tryAcquire()) {
+            executeDockerCommand(new String[]{"volume", "prune", "-f"}, task);
+            executeDockerCommand(new String[]{"builder", "prune", "-f"}, task);
+            executeDockerCommand(new String[]{"image", "prune", "--all", "-f"}, task);
+            task.getSemaphore().release();
+            task.setStatus(new TaskStateReady());
+        } else {
+            log.error("{} BUSY", task.getTaskId());
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+        }
+    }
+
+    @Async
+    public void delete(Task task) {
+        if (task.getSemaphore().tryAcquire()) {
+            workspaceUtils.deleteWorkspace(task.getTaskId());
+            task.setStatus(new TaskStateDeleted());
+        } else {
+            log.error("{} BUSY", task.getTaskId());
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+        }
     }
 
     private int executeDockerComposeCommand(String[] args, Task task) {
@@ -74,8 +102,4 @@ public class DockerService {
         return commandExecutorService.executeCommand(shellCommand, task.getTaskId());
     }
 
-    @Async
-    public void delete(Task task) {
-        workspaceUtils.deleteWorkspace(task.getTaskId());
-    }
 }

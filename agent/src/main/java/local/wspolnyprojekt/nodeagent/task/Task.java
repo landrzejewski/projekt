@@ -12,7 +12,7 @@ import java.util.concurrent.Semaphore;
 @RequiredArgsConstructor
 public class Task {
 
-    private final StatusBroadcaster statusListener;
+    private final StatusBroadcaster statusBroadcaster;
     private final WorkspaceUtils workspaceUtils;
 
     @Getter
@@ -30,7 +30,7 @@ public class Task {
 
     public void setStatus(TaskState status, String description) {
         this.status = status;
-        statusListener.broadcastStatusChange(this, description);
+        statusBroadcaster.broadcastStatusChange(this, description);
     }
 
     public void setStatus(TaskState status) {
