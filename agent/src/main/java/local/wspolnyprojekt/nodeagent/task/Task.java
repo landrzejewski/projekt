@@ -1,6 +1,5 @@
 package local.wspolnyprojekt.nodeagent.task;
 
-import local.wspolnyprojekt.nodeagent.docker.DockerService;
 import local.wspolnyprojekt.nodeagent.statusbroadcast.StatusBroadcaster;
 import local.wspolnyprojekt.nodeagent.task.state.TaskState;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateNull;

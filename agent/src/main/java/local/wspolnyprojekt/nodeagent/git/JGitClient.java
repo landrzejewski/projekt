@@ -4,16 +4,12 @@ import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateAllocated;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateFail;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateReady;
-import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
-
-import java.io.IOException;
 
 @ApplicationScope
 @Component
@@ -21,7 +17,6 @@ import java.io.IOException;
 public class JGitClient implements GitClient {
 
     private final Credentials credentials;
-    private final WorkspaceUtils workspaceUtils;
 
     @Async
     @Override

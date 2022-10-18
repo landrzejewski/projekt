@@ -2,7 +2,6 @@ package local.wspolnyprojekt.nodeagent.statusbroadcast;
 
 import local.wspolnyprojekt.nodeagent.communicationqueues.TaskMessageService;
 import local.wspolnyprojekt.nodeagent.task.Task;
-import local.wspolnyprojekt.nodeagent.task.state.TaskState;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
