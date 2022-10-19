@@ -33,7 +33,9 @@ public class DockerService {
             if (exitCode == 0) {
                 task.setStatus(new TaskStateDone());
             } else {
-                task.setStatus(new TaskStateFail(), "details in log");
+                if (task.getAndResetSendingNextStatus()) {
+                    task.setStatus(new TaskStateFail(), "details in log");
+                }
             }
         } else {
             log.error("{} BUSY", task.getTaskId());
@@ -43,17 +45,12 @@ public class DockerService {
 
     @Async
     public void down(Task task) {
-        if (task.getSemaphore().tryAcquire()) {
-            var exitCode = executeDockerComposeCommand(new String[]{"down"}, task);
-            if (exitCode == 0) {
-                task.setStatus(new TaskStateStopped());
-            } else {
-                task.setStatus(new TaskStateFail());
-            }
-            task.getSemaphore().release();
+        task.disableSendingNextStatus();
+        var exitCode = executeDockerComposeCommand(new String[]{"down"}, task);
+        if (exitCode == 0) {
+            task.setStatus(new TaskStateStopped());
         } else {
-            log.error("{} BUSY", task.getTaskId());
-            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+            task.setStatus(new TaskStateFail());
         }
     }
 

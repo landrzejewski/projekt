@@ -28,14 +28,14 @@ public class Task {
      * Na potrzeby Dockera: gdy zadanie jest uruchomione i pójdzie polecenie STOP, to zadanie w Dockerze wyśle
      * FAIL (bo się nie powiedzie, ale to jest porządane zachowanie, więc ten FAIL nie powinien iść do serwera)
      */
-    volatile private boolean skipNextStatusFlag = false;
+    volatile private boolean sendNextStatusFlag = true;
 
     public void disableSendingNextStatus() {
-        skipNextStatusFlag = true;
+        sendNextStatusFlag = false;
     }
 
     public boolean getAndResetSendingNextStatus() {
-        return skipNextStatusFlag ? (skipNextStatusFlag = false) || true : skipNextStatusFlag;
+        return sendNextStatusFlag ? sendNextStatusFlag : (sendNextStatusFlag = true) && false;
     }
 
     public File getWorkspaceAsFile() {

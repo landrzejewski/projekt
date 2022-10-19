@@ -16,14 +16,14 @@ class TaskTest {
         Task task;
         task = new Task(null,null,null);
         task.disableSendingNextStatus();
-        assertThat(task.getAndResetSendingNextStatus()).isTrue();
+        assertThat(task.getAndResetSendingNextStatus()).isFalse();
     }
 
     @Test
     void shouldGiveFalseWhenSendingNextStatusIsDefault() {
         Task task;
         task = new Task(null,null,null);
-        assertThat(task.getAndResetSendingNextStatus()).isFalse();
+        assertThat(task.getAndResetSendingNextStatus()).isTrue();
     }
 
     @Test
@@ -31,7 +31,7 @@ class TaskTest {
         Task task;
         task = new Task(null,null,null);
         task.disableSendingNextStatus();
-        assertThat(task.getAndResetSendingNextStatus()).isTrue(); // Pierwsze wywołanie - enabled
-        assertThat(task.getAndResetSendingNextStatus()).isFalse(); // Drugie wywołanie - disabled
+        assertThat(task.getAndResetSendingNextStatus()).isFalse(); // Pierwsze wywołanie - disabled
+        assertThat(task.getAndResetSendingNextStatus()).isTrue(); // Drugie wywołanie - enabled
     }
 }
