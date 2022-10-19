@@ -24,6 +24,20 @@ public class Task {
     @Getter
     private Semaphore semaphore = new Semaphore(1);
 
+    /**
+     * Na potrzeby Dockera: gdy zadanie jest uruchomione i pójdzie polecenie STOP, to zadanie w Dockerze wyśle
+     * FAIL (bo się nie powiedzie, ale to jest porządane zachowanie, więc ten FAIL nie powinien iść do serwera)
+     */
+    volatile private boolean skipNextStatusFlag = false;
+
+    public void disableSendingNextStatus() {
+        skipNextStatusFlag = true;
+    }
+
+    public boolean getAndResetSendingNextStatus() {
+        return skipNextStatusFlag ? (skipNextStatusFlag = false) || true : skipNextStatusFlag;
+    }
+
     public File getWorkspaceAsFile() {
         return workspaceUtils.getWorkspaceDirAsFile(taskId);
     }
