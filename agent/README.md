@@ -12,7 +12,7 @@ Wszystko przeniesione do biblioteki agent-lib. Nie trzeba robić `mvn install` b
 </dependency>
 ```
 
-Metody statyczne klasy `AgentRestRequestDetails` zwracają obiekt `RequestDetails`, który zawiera dane takie jak typ requestu (klasy `RequestMethod`),
+Metody statyczne klasy `AgentRestRequestDetails` zwracają obiekt `RequestDetails`, który zawiera dane takie jak typ requestu (klasy `NodeHttpRequestMethod`),
 "doklejkę" do URL-a z odpowiednim endpointem i ustawionymi pathvariable oraz gotowy payload (JSON jako String) do wrzucenia w body requestu.
 
 ## Przykłady użycia
@@ -25,8 +25,34 @@ Przykładowy projekt używany przeze mnie do testów jest pod adresem [https://g
 - jak za pomocą `.gitattributes` ustawiać odpowiednie mapowania końców linii w plikach tekstowych aby git zrobił odpowiednią konwersję automatycznie (we wnętrzu kontenera Dockera jest środowisko Linuxowe, w którym jest stosowane inne kodowanie końców linii, dla plików źródłowych Javy nie ma to większego znaczenia, ale dla skryptów sh/bash już tak).
 
 ## Konfiguracja
-Na razie konfiguracja jest w enumie `Configuration.java`, w którym jest ustawiony główny foplder workspace (workspace poszczególnych tasków to podfoldery tego folderu o nazwach takich, jak `taskid`
-więc `taskid` trzeba nadawać na razie takie, aby było poprawną nazwą folderu w Windowsie).
+Plik `application.properties`, w którym jest ustawiony główny folder workspace (workspace poszczególnych tasków to podfoldery tego folderu o nazwach takich, jak `taskid`
+więc `taskid` trzeba nadawać takie, aby było poprawną nazwą folderu w Windowsie).
 
-## Uwagi
-Brakuje jeszcze handlerów do obsługi wielu błędów, ale one pojawią się dopiero jak będę miał obsługę stanów danego taska (na razie nie implementowałem, aby nie tracić czasu na pisanie czegoś, co i tak docelowo poleci do kosza).
+Klucz `agent.configuration.persistence.file` - nazwa pliku (w folderze `agent.workspace.dir`) w którym agent przechowuje dane, które mają przetrwać ewentualny restart noda (w tym momencie tylko nodeId)
+
+Klucz `agent.configuration.id.key` - jego wartość, to klucz pod jakim agent zapisuje swoje id w "persistence.file"
+
+Klucze `server.rest.*` to odpowiednio:
+
+`ip` i `port` - na to ip:port agent wysyła requesty REST
+
+`register` - endpoint na który agent zgłasza serwerowi swoje dane (id agenta oraz ip:port na którym przyjmuje polecenia REST)
+
+`tasklog` - endpoint na który agent wysyła bieżące logi taska; w ścieżce może być zawarty string `{taskid}` (nawiasy klamrowe trzeba maskować przez `\\`) który jest podmieniany na id taska
+
+`taskstatus` - endpoint na który są wysyłane zmiany statusu taska (też może zawierać `{taskid}`)
+
+### Przykładowy plik konfiguracyjny `application.properties`
+```
+server.port=8000
+agent.workspace.dir=C:\\tmp\\workspace
+
+agent.configuration.persistence.file=configuration.properties
+agent.configuration.id.key=agent.id
+
+server.rest.ip=127.0.0.1
+server.rest.port=8080
+server.rest.register=/register
+server.rest.tasklog=/tasklog/\\{taskid\\}
+server.rest.taskstatus=/taskstatus/\\{taskid\\}
+```
