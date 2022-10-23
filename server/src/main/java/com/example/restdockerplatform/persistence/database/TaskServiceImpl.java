@@ -1,5 +1,7 @@
 package com.example.restdockerplatform.persistence.database;
 
+import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
