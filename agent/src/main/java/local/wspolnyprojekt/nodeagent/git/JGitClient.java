@@ -1,14 +1,15 @@
 package local.wspolnyprojekt.nodeagent.git;
 
+import local.wspolnyprojekt.nodeagent.task.Task;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateAllocated;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateFail;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateReady;
 import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
-
-import java.io.File;
-import java.io.IOException;
 
 @ApplicationScope
 @Component
@@ -17,27 +18,50 @@ public class JGitClient implements GitClient {
 
     private final Credentials credentials;
 
+    @Async
     @Override
-    public void clone(GitResource gitResource, File workspace) throws GitAPIException {
-        var gitCommand = Git.cloneRepository()
-                .setURI(gitResource.getRepositoryUrl())
-                .setBranch(gitResource.getBranch())
-                .setDirectory(workspace);
-        if (credentials.getCredentials() != null) {
-            gitCommand = gitCommand.setCredentialsProvider(credentials.getCredentials());
+    public void clone(GitResource gitResource, Task task) {
+        if (task.getSemaphore().tryAcquire()) {
+            task.setStatus(new TaskStateAllocated());
+            var gitCommand = Git.cloneRepository()
+                    .setURI(gitResource.getRepositoryUrl())
+                    .setBranch(gitResource.getBranch())
+                    .setDirectory(task.getWorkspaceAsFile());
+            if (credentials.getGitCredentials() != null) {
+                gitCommand = gitCommand.setCredentialsProvider(credentials.getGitCredentials());
+            }
+            try {
+                gitCommand.call().close();
+                task.setStatus(new TaskStateReady());
+            } catch (Exception e) {
+                task.setStatus(new TaskStateFail(), e.getMessage());
+            } finally {
+                task.getSemaphore().release();
+            }
+        } else {
+            throw new RuntimeException("BUSY");
         }
-        gitCommand.call().close();
     }
 
     @Override
-    public boolean pull(File workspace) throws IOException, GitAPIException {
-        try (var gitCommand = Git.open(workspace)) {
-            return gitCommand.pull().call().isSuccessful();
+    public void pull(Task task) {
+        if (task.getSemaphore().tryAcquire()) {
+            task.setStatus(new TaskStateAllocated());
+            try (var gitCommand = Git.open(task.getWorkspaceAsFile())) {
+                gitCommand.pull().call().isSuccessful();
+                task.setStatus(new TaskStateReady());
+            } catch (Exception e) {
+                task.setStatus(new TaskStateFail(), e.getMessage());
+            } finally {
+                task.getSemaphore().release();
+            }
+        } else {
+            throw new RuntimeException("BUSY");
         }
     }
 
     @Override
     public void setCredentials(String user, String password) {
-        credentials.setCredentials(user, password);
+        credentials.setGitCredentials(user, password);
     }
 }

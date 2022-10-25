@@ -1,8 +1,7 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagentlib.dto.NodeLoad;
 import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
-import local.wspolnyprojekt.nodeagent.serverstatus.NodeStatus;
+import local.wspolnyprojekt.nodeagent.nodeinfo.NodeLoad;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SystemApi {
 
-    public final NodeStatus nodeStatus;
+    public final NodeLoad nodeLoad;
 
     @GetMapping(RestEndpoints.SYSTEM_LOAD)
-    NodeLoad getNodeLoad() {
-        return nodeStatus.getLoadData();
+    local.wspolnyprojekt.nodeagentlib.dto.NodeLoad getNodeLoad() {
+         return nodeLoad.getLoadData();
     }
 
     @GetMapping(RestEndpoints.SYSTEM_PING)

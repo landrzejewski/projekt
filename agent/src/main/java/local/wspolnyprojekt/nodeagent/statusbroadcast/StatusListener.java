@@ -1,8 +1,7 @@
 package local.wspolnyprojekt.nodeagent.statusbroadcast;
 
-import local.wspolnyprojekt.nodeagent.task.TaskStatus;
+import local.wspolnyprojekt.nodeagent.task.Task;
 
 public interface StatusListener {
-    void receiveStatus(String taskId, TaskStatus status) ;
-
+    void receiveStatus(Task task, String description) ;
 }

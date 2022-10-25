@@ -1,6 +1,5 @@
 package local.wspolnyprojekt.nodeagentlib.dto;
 
-import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,34 +1,54 @@
 package local.wspolnyprojekt.nodeagent.task;
 
-import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
-import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import local.wspolnyprojekt.nodeagent.statusbroadcast.StatusBroadcaster;
+import local.wspolnyprojekt.nodeagent.task.state.TaskState;
+import local.wspolnyprojekt.nodeagent.task.state.TaskStateNull;
+import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.File;
+import java.util.concurrent.Semaphore;
 
 @RequiredArgsConstructor
 public class Task {
 
-    @Autowired
-    private StatusBroadcaster statusListener;
+    private final StatusBroadcaster statusBroadcaster;
+    private final WorkspaceUtils workspaceUtils;
 
     @Getter
     private final String taskId;
 
     @Getter
-    private TaskStatus status;
+    private TaskState status = new TaskStateNull();
 
-    @Setter
-    private GitResource gitResource;
+    @Getter
+    private Semaphore semaphore = new Semaphore(1);
 
-    @Setter
-    private GitCredentials gitCredentials;
+    /**
+     * Na potrzeby Dockera: gdy zadanie jest uruchomione i pójdzie polecenie STOP, to zadanie w Dockerze wyśle
+     * FAIL (bo się nie powiedzie, ale to jest porządane zachowanie, więc ten FAIL nie powinien iść do serwera)
+     */
+    volatile private boolean sendNextStatusFlag = true;
 
-    public void setStatus(TaskStatus status) {
-        this.status = status;
-        // TODO callListener
+    public void disableSendingNextStatus() {
+        sendNextStatusFlag = false;
     }
 
-}
+    public boolean getAndResetSendingNextStatus() {
+        return sendNextStatusFlag ? sendNextStatusFlag : (sendNextStatusFlag = true) && false;
+    }
+
+    public File getWorkspaceAsFile() {
+        return workspaceUtils.getWorkspaceDirAsFile(taskId);
+    }
+
+    public void setStatus(TaskState status, String description) {
+        this.status = status;
+        statusBroadcaster.broadcastStatusChange(this, description);
+    }
+
+    public void setStatus(TaskState status) {
+        setStatus(status,"");
+    }
+
+ }
