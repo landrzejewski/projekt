@@ -1,5 +1,7 @@
 package com.example.restdockerplatform.persistence.database;
 
+import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

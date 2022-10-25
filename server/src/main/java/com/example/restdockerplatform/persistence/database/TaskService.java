@@ -1,7 +1,6 @@
 package com.example.restdockerplatform.persistence.database;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 
 import java.util.List;
 import java.util.Optional;

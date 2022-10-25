@@ -6,6 +6,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
+
 @Entity
 @Table(name = "tasks")
 @Getter
