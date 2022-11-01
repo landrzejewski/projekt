@@ -52,7 +52,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         nodeRegistrationEntity.setHost(host);
         nodeRegistrationEntity.setPort(port);
         try {
-            sendRestPostRequest(nodeConfigurationProperties.getRegisterUrl(), nodeRegistrationEntity.getJsonString());
+            sendRestPostRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}",agentId), nodeRegistrationEntity.getJsonString());
             registered = true;
             configurationPersistence.save(nodeConfigurationProperties.getConfigurationAgentIdKey(), agentId);
         } catch (Exception e) {

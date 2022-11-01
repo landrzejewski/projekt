@@ -5,7 +5,6 @@ import local.wspolnyprojekt.nodeagent.task.state.*;
 import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
-import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -68,7 +67,7 @@ public class DockerService {
             task.setStatus(new TaskStateReady());
         } else {
             log.error("{} BUSY", task.getTaskId());
-            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie czyszczenia kontenerów, voluminów i obrazów?
         }
     }
 
@@ -79,7 +78,7 @@ public class DockerService {
             task.setStatus(new TaskStateDeleted());
         } else {
             log.error("{} BUSY", task.getTaskId());
-            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie usunięcia workspace?
         }
     }
 
