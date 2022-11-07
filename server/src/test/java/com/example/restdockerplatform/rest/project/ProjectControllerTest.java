@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.rest.project;
 
 import com.example.restdockerplatform.domain.ProcessStatus;
 import lombok.extern.slf4j.Slf4j;

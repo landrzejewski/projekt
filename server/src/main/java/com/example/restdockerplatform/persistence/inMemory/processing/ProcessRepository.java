@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.persistence.inMemory;
+package com.example.restdockerplatform.persistence.inMemory.processing;
 
 import com.example.restdockerplatform.domain.ProcessStatus;
 import com.example.restdockerplatform.domain.UploadStatus;
@@ -14,7 +14,7 @@ import static com.example.restdockerplatform.domain.ProcessStatus.READY;
 
 
 @Repository
-public class ProcessingRepository {
+public class ProcessRepository {
 
     private static final Map<UserTask, UploadStatus> USER_UPLOAD_STATUS_MAP = new HashMap<>();
 

@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.rest.project;
 
 
 import com.example.restdockerplatform.persistence.database.Task;
@@ -110,12 +110,18 @@ public class ProjectController {
     }
 
 
+    /**
+     * Orders execute task
+     *
+     * @param user    user
+     * @param project project
+     * @return
+     */
     @PostMapping("/execute/{user}/{project}")
     ResponseEntity<String> executeUserProject(
             @PathVariable final String user,
             @PathVariable final String project) {
 
-        // TODO    POST zlecenie wykonania - wywołanie przetwarzania przez docker konkretnego zadania
         log.info(" -> executeUserProject, user = {}, project = {}", user, project);
         return projectService.orderExecute(user, project);
     }
