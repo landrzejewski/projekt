@@ -8,10 +8,7 @@ import local.wspolnyprojekt.nodeagentlib.dto.NodeRegistrationEntity;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -52,9 +49,11 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         nodeRegistrationEntity.setHost(host);
         nodeRegistrationEntity.setPort(port);
         try {
-            sendRestPostRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}",agentId), nodeRegistrationEntity.getJsonString());
-            registered = true;
-            configurationPersistence.save(nodeConfigurationProperties.getConfigurationAgentIdKey(), agentId);
+            HttpStatus status = sendRestPostRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}",agentId), nodeRegistrationEntity.getJsonString());
+            if(status.is2xxSuccessful()) {
+                registered = true;
+                configurationPersistence.save(nodeConfigurationProperties.getConfigurationAgentIdKey(), agentId);
+            }
         } catch (Exception e) {
             log.error("{}", e.getMessage());
         }
@@ -65,12 +64,13 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         return registered;
     }
 
-    private void sendRestPostRequest(String endpoint, String payload) {
+    private HttpStatus sendRestPostRequest(String endpoint, String payload) {
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(payload, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
+        return response.getStatusCode();
 //        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
     }
 
