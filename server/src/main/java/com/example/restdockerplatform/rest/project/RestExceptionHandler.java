@@ -1,5 +1,6 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.rest.project;
 
+import com.example.restdockerplatform.rest.node.NoResourcesAvailableException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,7 +15,7 @@ import java.io.IOException;
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = IncorrectFileTypeException.class)
-    ResponseEntity<?> handleIOException(IncorrectFileTypeException ex) {
+    ResponseEntity<?> handleIncorrectFileTypeException(IncorrectFileTypeException ex) {
 
         log.error(ex.getMessage());
         return ResponseEntity
@@ -31,5 +32,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .internalServerError()
                 .build();
     }
+
+
+    @ExceptionHandler(value = NoResourcesAvailableException.class)
+    ResponseEntity<String> handleNoResourcesAvailableException(NoResourcesAvailableException ex) {
+
+        log.error(ex.getMessage());
+        return ResponseEntity
+                .internalServerError()
+                .build();
+    }
+
 
 }

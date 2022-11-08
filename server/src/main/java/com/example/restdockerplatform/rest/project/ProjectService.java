@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.rest.project;
 
 import com.example.restdockerplatform.domain.ProcessStatus;
 import com.example.restdockerplatform.domain.UploadStatus;
@@ -8,7 +8,8 @@ import com.example.restdockerplatform.file.FileService;
 import com.example.restdockerplatform.git.TaskRepository;
 import com.example.restdockerplatform.persistence.database.Task;
 import com.example.restdockerplatform.persistence.database.TaskService;
-import com.example.restdockerplatform.persistence.inMemory.ProcessingRepository;
+import com.example.restdockerplatform.persistence.inMemory.processing.ProcessRepository;
+import com.example.restdockerplatform.rest.node.NodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,15 +34,23 @@ class ProjectService {
     private final ApplicationEventPublisher publisher;
     private final FileService fileService;
     private final TaskRepository taskRepository;
-    private final ProcessingRepository processingRepository;
+    private final ProcessRepository processingRepository;
+
+    private final NodeService nodeService;
 
 
-    ProjectService(TaskService taskService, ApplicationEventPublisher publisher, FileService fileService, TaskRepository taskRepository, ProcessingRepository processingRepository) {
+    ProjectService(TaskService taskService,
+                   ApplicationEventPublisher publisher,
+                   FileService fileService,
+                   TaskRepository taskRepository,
+                   ProcessRepository processRepository,
+                   NodeService nodeService) {
         this.taskService = taskService;
         this.publisher = publisher;
         this.fileService = fileService;
         this.taskRepository = taskRepository;
-        this.processingRepository = processingRepository;
+        this.processingRepository = processRepository;
+        this.nodeService = nodeService;
     }
 
 
@@ -117,13 +126,14 @@ class ProjectService {
 
     ResponseEntity<String> orderExecute(String user, String project) {
 
+
         final ProcessStatus processStatus = processingRepository.getStatus(new UserTask(user, project));
 
         switch (processStatus) {
             case READY -> {
-                // TODO order execute
+                final String taskId = nodeService.orderExecute(user, project);
 
-                return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s", user, project));
+                return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s, id = %s", user, project, taskId));
             }
             case ERROR -> {
                 return ResponseEntity.badRequest().body(String.format("Cannot execute, error uploading task,\nuser = %s, project = %s", user, project));

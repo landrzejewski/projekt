@@ -1,4 +1,4 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.rest.project;
 
 
 import java.io.IOException;
