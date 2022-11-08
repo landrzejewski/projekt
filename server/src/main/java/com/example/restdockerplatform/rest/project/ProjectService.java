@@ -10,6 +10,7 @@ import com.example.restdockerplatform.persistence.database.Task;
 import com.example.restdockerplatform.persistence.database.TaskService;
 import com.example.restdockerplatform.persistence.inMemory.processing.ProcessRepository;
 import com.example.restdockerplatform.rest.node.NodeService;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.springframework.context.ApplicationEventPublisher;
@@ -35,6 +36,7 @@ class ProjectService {
     private final FileService fileService;
     private final TaskRepository taskRepository;
     private final ProcessRepository processingRepository;
+
 
     private final NodeService nodeService;
 
@@ -126,12 +128,21 @@ class ProjectService {
 
     ResponseEntity<String> orderExecute(String user, String project) {
 
-
         final ProcessStatus processStatus = processingRepository.getStatus(new UserTask(user, project));
 
         switch (processStatus) {
             case READY -> {
+
                 final String taskId = nodeService.orderExecute(user, project);
+
+                final Task task = Task.builder()
+                        .Id(taskId)
+                        .project(project)
+                        .username(user)
+                        .status(TaskStatus.TASK_STATUS_NULL)
+                        .build();
+
+                taskService.saveTask(task);
 
                 return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s, id = %s", user, project, taskId));
             }
