@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_DONE;
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_FAIL;
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_RUNNING;
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_UNKNOWN;
+
 @RequiredArgsConstructor
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -23,8 +28,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> fetchTaskList() {
-        return (List<Task>) taskRepository.findAll();
+        return taskRepository.findAll();
     }
+
+    @Override
+    public List<Task> findByNodeUUId(String nodeUUId) {
+        return taskRepository.findByNodeUUId(nodeUUId);
+    }
+
 
 
     @Override
@@ -78,6 +89,24 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> findByUserNameAndProject(String username, String project) {
         return taskRepository.findByUsernameAndProject(username, project);
+    }
+
+
+    public void updateStatusesOfNotFinishedTasks(String nodeUUId) {
+        final List<Task> tasksToVerifyAndChangeStatus = findByNodeUUId(nodeUUId);
+
+        tasksToVerifyAndChangeStatus.stream()
+                .filter(this::filerTaskByStatus)
+                .forEach(task -> updateTaskStatus(
+                        TASK_STATUS_FAIL, task.getId()));
+    }
+
+    private boolean filerTaskByStatus(Task task) {
+
+        // TODO change statuses to change
+
+        return !task.getStatus().equals(TASK_STATUS_DONE)
+                && (task.getStatus().equals(TASK_STATUS_RUNNING) || task.getStatus().equals(TASK_STATUS_UNKNOWN));
     }
 
 }

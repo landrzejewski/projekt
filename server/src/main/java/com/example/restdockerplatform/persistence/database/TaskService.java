@@ -13,6 +13,9 @@ public interface TaskService {
     // Read all
     List<Task> fetchTaskList();
 
+    List<Task> findByNodeUUId(String nodeUUId);
+
+
     //Read one by Id
     Optional<Task> findById(String id);
 
@@ -29,4 +32,13 @@ public interface TaskService {
     void deleteTaskById(String taskId);
 
     List<Task> findByUserNameAndProject(String username, String project);
+
+    /**
+     * Method changes status of not finished files to fail
+     *
+     * @param nodeUUId UUId of node
+     */
+    // update
+    void updateStatusesOfNotFinishedTasks(String nodeUUId);
+
 }

@@ -1,8 +1,8 @@
-package com.example.restdockerplatform.rest;
+package com.example.restdockerplatform.rest.project;
 
-class RestUtil {
+public class RestUtil {
 
-    static String getDownloadUri(String user, String project) {
+    public static String getDownloadUri(String user, String project) {
 
         return new StringBuilder()
                 .append("/api/project/")

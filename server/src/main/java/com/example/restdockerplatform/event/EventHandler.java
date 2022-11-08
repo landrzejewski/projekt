@@ -5,7 +5,7 @@ import com.example.restdockerplatform.domain.UploadStatus;
 import com.example.restdockerplatform.domain.UserTask;
 import com.example.restdockerplatform.file.FileService;
 import com.example.restdockerplatform.git.TaskRepository;
-import com.example.restdockerplatform.persistence.inMemory.ProcessingRepository;
+import com.example.restdockerplatform.persistence.inMemory.processing.ProcessRepository;
 import com.example.restdockerplatform.utils.UnZipException;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.springframework.context.event.EventListener;
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventHandler {
 
-    private final ProcessingRepository processingRepository;
+    private final ProcessRepository processRepository;
     private final FileService fileService;
     private final TaskRepository taskRepository;
 
 
-    public EventHandler(ProcessingRepository processingRepository, FileService fileService, TaskRepository taskRepository) {
-        this.processingRepository = processingRepository;
+    public EventHandler(ProcessRepository processRepository, FileService fileService, TaskRepository taskRepository) {
+        this.processRepository = processRepository;
         this.fileService = fileService;
         this.taskRepository = taskRepository;
     }
@@ -38,7 +38,7 @@ public class EventHandler {
             // unzip zip file in proper place
             fileService.unzipFile(event.getUser(), event.getProject());
         } catch (UnZipException ex) {
-            processingRepository.setStatus(userTask, UploadStatus.ERROR);
+            processRepository.setStatus(userTask, UploadStatus.ERROR);
 
         }
 
@@ -46,11 +46,11 @@ public class EventHandler {
             // commit and push changes to Git repository
             taskRepository.saveTask(event.getUser(), event.getProject());
         } catch (RepositoryNotFoundException ex) {
-            processingRepository.setStatus(userTask, UploadStatus.ERROR);
+            processRepository.setStatus(userTask, UploadStatus.ERROR);
         }
 
         // save status
-        processingRepository.setStatus(userTask, UploadStatus.FINISHED);
+        processRepository.setStatus(userTask, UploadStatus.FINISHED);
     }
 
 }

@@ -2,15 +2,21 @@ package com.example.restdockerplatform.workflow;
 
 import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class WorkflowController {
 
-    @Autowired
-    WorkflowService workflowService;
+    private final WorkflowService workflowService;
+
+    public WorkflowController(WorkflowService workflowService) {
+        this.workflowService = workflowService;
+    }
+
 
     @PostMapping("/taskstatus/{id}")
     public ResponseEntity<String> updateTaskStatus(@RequestBody TaskStatusMessage taskStatusMessage,
