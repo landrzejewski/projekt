@@ -24,6 +24,8 @@ import static local.wspolnyprojekt.nodeagentlib.AgentRestRequestDetails.gitCrede
 public class NodeService {
 
 
+    private static String GIT_URL;
+    private static String GIT_USER;
     private static String GIT_TOKEN;
     private final NodeRepository nodeRepository;
     private final NodeBalancingService nodeBalancingService;
@@ -35,12 +37,17 @@ public class NodeService {
                 NodeBalancingService nodeBalancingService,
                 TaskService taskService,
                 DateTimeService dateTimeService,
-                @Value("${github.token}") String gitHubToken) {
+                @Value("${github.token}") String gitHubToken,
+                @Value("${github.url}") String gitHubUrl,
+                @Value("${github.user}") String gitHubUser
+    ) {
         this.nodeRepository = nodeRepository;
         this.nodeBalancingService = nodeBalancingService;
         this.taskService = taskService;
         this.dateTimeService = dateTimeService;
         GIT_TOKEN = gitHubToken;
+        GIT_URL = gitHubUrl;
+        GIT_USER = gitHubUser;
     }
 
 
@@ -98,18 +105,17 @@ public class NodeService {
 
         return taskId;
 
-        // nie podoba mi, że musze nadawać UUID taskowi
-        // nie podoba mi się, ze musze przekazywac nodowi credentiale do repozytorium
-        // nie podoba mi się wykorzystanie NodeHttpRequestMethod zamiast HttpMethod
-
         // HttpCommunicationService może byc komponentem a nie wykorzystywać metody statyczne
 
-        // nalezy przygotować klasę konfiguracyjną czytająca z properties a nie podpinac @Value
+        // nalezy przygotować klasę konfiguracyjną czytająca z properties a nie podpinac @Value   -GitHubConfigurationConfig
     }
 
     private void sendTask(NodeEntity node, String user, String project, String taskId) {
 
-        final RequestDetails requestDetails = gitCloneRequestDetails(project, user, taskId);
+        final String url = GIT_URL + GIT_USER + "/" + project + ".git";
+
+        // opakować project https://......../project.git
+        final RequestDetails requestDetails = gitCloneRequestDetails(url, user, taskId);
 
         HttpCommunicationService.sendRequest(node, requestDetails);
     }

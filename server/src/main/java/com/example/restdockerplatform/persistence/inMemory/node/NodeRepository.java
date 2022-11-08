@@ -18,9 +18,9 @@ public class NodeRepository {
             return null;
         }
 
-        final NodeEntity inserted = NODE_STATUS_MAP.put(nodeEntity.getId(), nodeEntity);
+        NODE_STATUS_MAP.put(nodeEntity.getId(), nodeEntity);
 
-        return inserted.getId();
+        return nodeEntity.getId();
     }
 
 
