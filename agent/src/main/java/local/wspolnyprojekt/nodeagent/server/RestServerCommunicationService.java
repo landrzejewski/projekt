@@ -74,4 +74,14 @@ public class RestServerCommunicationService implements ServerCommunicationServic
 //        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
     }
 
+    private HttpStatus sendRestPutRequest(String endpoint, String payload) {
+        var restTemplate = new RestTemplate();
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(payload, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
+        return response.getStatusCode();
+//        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
+    }
+
 }
