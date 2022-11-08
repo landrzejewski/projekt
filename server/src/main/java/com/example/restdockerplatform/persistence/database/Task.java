@@ -41,12 +41,12 @@ public class Task {
     @Column
     private String textResult;
 
+    // zlecenie wykonania zadania -> set startTime,
     @Column
     private LocalDateTime startDateTime;
 
+    // TODO aktualizacja statusu -> set endTime
     @Column
     private LocalDateTime endDateTime;
-
-    //TODO: zmiana statusu na start -> set startTime, Zakonczony -> set endTime
 
 }
