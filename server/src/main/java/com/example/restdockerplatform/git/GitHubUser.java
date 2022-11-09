@@ -14,22 +14,18 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class GitHubUser implements ProjectContentProvider {
-    private final GitHub gitHub;
+
     private final GHUser gitHubUser;
 
     GitHubUser(GitHubConfigurationConfig configurationConfig) {
         try {
-            gitHub = GitHub.connectUsingOAuth(configurationConfig.getGitHubToken());
+            final GitHub gitHub = GitHub.connectUsingOAuth(configurationConfig.getGitHubToken());
             gitHubUser = gitHub.getUser(configurationConfig.getGitHubUser());
         } catch (IOException ex) {
             log.info("Error when connecting to repository");
             throw new GitHubConnectionError(String.format("Could not connect to repository %s. Reason: %s",
                     configurationConfig.getGitHubUser(), ex.getMessage()));
         }
-    }
-
-    GHUser getGitHubUser() {
-        return gitHubUser;
     }
 
     @Override
