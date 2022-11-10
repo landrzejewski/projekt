@@ -28,12 +28,12 @@ public class RestServerCommunicationService implements ServerCommunicationServic
 
     @Override
     public void sendTaskLog(TaskLogMessage taskLogMessage) {
-        sendRestPostRequest(nodeConfigurationProperties.getTaskLogUrl(taskLogMessage.getSenderId()), taskLogMessage.getJsonString());
+        sendRestPutRequest(nodeConfigurationProperties.getTaskLogUrl(taskLogMessage.getSenderId()), taskLogMessage.getJsonString());
     }
 
     @Override
     public void sendTaskStatus(TaskStatusMessage taskStatusMessage) {
-        sendRestPostRequest(nodeConfigurationProperties.getTaskStatusUrl(taskStatusMessage.getTaskId()), taskStatusMessage.getJsonString());
+        sendRestPutRequest(nodeConfigurationProperties.getTaskStatusUrl(taskStatusMessage.getTaskId()), taskStatusMessage.getJsonString());
     }
 
     @Override
@@ -49,8 +49,8 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         nodeRegistrationEntity.setHost(host);
         nodeRegistrationEntity.setPort(port);
         try {
-            HttpStatus status = sendRestPostRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}",agentId), nodeRegistrationEntity.getJsonString());
-            if(status.is2xxSuccessful()) {
+            HttpStatus status = sendRestPutRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}", agentId), nodeRegistrationEntity.getJsonString());
+            if (status.is2xxSuccessful()) {
                 registered = true;
                 configurationPersistence.save(nodeConfigurationProperties.getConfigurationAgentIdKey(), agentId);
             }
@@ -65,23 +65,36 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     }
 
     private HttpStatus sendRestPostRequest(String endpoint, String payload) {
-        var restTemplate = new RestTemplate();
-        var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(payload, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
-        return response.getStatusCode();
+//        var restTemplate = new RestTemplate();
+//        var headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        HttpEntity<String> request = new HttpEntity<>(payload, headers);
+//        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
+//        return response.getStatusCode();
 //        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
+        return sendRestRequest(endpoint, payload, HttpMethod.POST).getStatusCode();
     }
 
     private HttpStatus sendRestPutRequest(String endpoint, String payload) {
+//        var restTemplate = new RestTemplate();
+//        var headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        HttpEntity<String> request = new HttpEntity<>(payload, headers);
+////        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
+//        ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.PUT, request, String.class);
+//        return response.getStatusCode();
+//        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
+        return sendRestRequest(endpoint, payload, HttpMethod.PUT).getStatusCode();
+    }
+
+    private ResponseEntity<String> sendRestRequest(String endpoint, String payload, HttpMethod method) {
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(payload, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
-        return response.getStatusCode();
-//        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
+//        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(endpoint, method, request, String.class);
+        return response;
     }
 
 }
