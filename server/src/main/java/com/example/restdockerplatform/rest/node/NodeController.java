@@ -43,7 +43,7 @@ public class NodeController {
      * Register node in server
      *
      * @param id id
-     * @return
+     * @return node id
      */
     @PostMapping("/{id}")
     String registerNode(

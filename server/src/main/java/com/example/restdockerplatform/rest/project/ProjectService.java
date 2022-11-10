@@ -10,6 +10,7 @@ import com.example.restdockerplatform.persistence.database.Task;
 import com.example.restdockerplatform.persistence.database.TaskService;
 import com.example.restdockerplatform.persistence.inMemory.processing.ProcessRepository;
 import com.example.restdockerplatform.rest.node.NodeService;
+import com.example.restdockerplatform.utils.DateTimeService;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -36,23 +38,24 @@ class ProjectService {
     private final FileService fileService;
     private final TaskRepository taskRepository;
     private final ProcessRepository processingRepository;
-
-
     private final NodeService nodeService;
 
+    private final DateTimeService dateTimeService;
 
     ProjectService(TaskService taskService,
                    ApplicationEventPublisher publisher,
                    FileService fileService,
                    TaskRepository taskRepository,
                    ProcessRepository processRepository,
-                   NodeService nodeService) {
+                   NodeService nodeService,
+                   DateTimeService dateTimeService) {
         this.taskService = taskService;
         this.publisher = publisher;
         this.fileService = fileService;
         this.taskRepository = taskRepository;
         this.processingRepository = processRepository;
         this.nodeService = nodeService;
+        this.dateTimeService = dateTimeService;
     }
 
 
@@ -133,16 +136,11 @@ class ProjectService {
         switch (processStatus) {
             case READY -> {
 
-                final String taskId = nodeService.orderExecute(user, project);
+                final String taskId = UUID.randomUUID().toString();
 
-                final Task task = Task.builder()
-                        .Id(taskId)
-                        .project(project)
-                        .username(user)
-                        .status(TaskStatus.TASK_STATUS_NULL)
-                        .build();
+                final String nodeId = nodeService.orderExecute(user, project, taskId);
 
-                taskService.saveTask(task);
+                saveTaskInfoToDB(user, project, taskId, nodeId);
 
                 return ResponseEntity.ok().body(String.format("Ordered execution,\nuser = %s, project = %s, id = %s", user, project, taskId));
             }
@@ -154,6 +152,20 @@ class ProjectService {
             }
         }
 
+    }
+
+
+    private void saveTaskInfoToDB(String user, String project, String taskId, String nodeId) {
+        final Task task = Task.builder()
+                .Id(taskId)
+                .project(project)
+                .username(user)
+                .nodeUUId(nodeId)
+                .startDateTime(dateTimeService.getSystemDateTime())
+                .status(TaskStatus.TASK_STATUS_NULL)
+                .build();
+
+        taskService.saveTask(task);
     }
 
     ResponseEntity<ProcessStatusDTO> getSaveStatus(String user, String project) {
