@@ -2,6 +2,7 @@ package com.example.restdockerplatform.workflow;
 
 import com.example.restdockerplatform.persistence.database.Task;
 import com.example.restdockerplatform.persistence.database.TaskService;
+import com.example.restdockerplatform.utils.DateTimeService;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     @Autowired
     TaskService taskService;
+
+    @Autowired
+    private final DateTimeService dateTimeService;
 
     @Override
     public void appendLog(String id, String logLine) {
@@ -35,6 +39,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         }
         var task = taskOptional.get();
         task.setStatus(status);
+        task.setEndDateTime(dateTimeService.getSystemDateTime());
         taskService.saveTask(task);
     }
 
