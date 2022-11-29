@@ -7,12 +7,15 @@ import local.wspolnyprojekt.nodeagent.task.state.*;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskCommand;
+import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
@@ -20,12 +23,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.synchronizedMap;
 
 @RequiredArgsConstructor
 @Service
 @ApplicationScope
+@Slf4j
 public class TasksService {
 
     private final DockerService dockerService;
@@ -47,6 +54,11 @@ public class TasksService {
             case TASK_COMMAND_DELETE -> delete(getTask(taskId));
         };
 
+    }
+
+
+    public ResponseEntity executeCommand(Task task, TaskCommand taskCommand) throws FileNotFoundException {
+        return executeCommand(task.getTaskId(),taskCommand);
     }
 
     public boolean hasTask(String taskId) {
@@ -88,8 +100,13 @@ public class TasksService {
     }
 
     public ResponseEntity start(Task task) {
+        log.info("Task start: {}", task);
         dockerService.buildAndRun(task);
         return ResponseEntity.ok().build(); // TODO
+    }
+
+    public ResponseEntity start(String taskid) {
+        return start(getTask(taskid));
     }
 
     public ResponseEntity down(Task task) {
@@ -103,7 +120,7 @@ public class TasksService {
     }
 
     public ResponseEntity delete(Task task) {
-        if(task.getStatus().getDtoTaskStatus().equals(TaskStatus.TASK_STATUS_DELETED)) { // Ponowne usunięcie "zwalnia" ID
+        if (task.getStatus().getDtoTaskStatus().equals(TaskStatus.TASK_STATUS_DELETED)) { // Ponowne usunięcie "zwalnia" ID
             deleteTask(task);
         } else {
             dockerService.delete(task);

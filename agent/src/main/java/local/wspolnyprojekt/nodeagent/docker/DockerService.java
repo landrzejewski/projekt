@@ -25,6 +25,7 @@ public class DockerService {
 
     @Async
     public void buildAndRun(Task task) {
+        log.info("Docker build and run: {}",task);
         if (task.getSemaphore().tryAcquire()) {
             task.setStatus(new TaskStateRunning());
             var exitCode = executeDockerComposeCommand(new String[]{"up", "--build"}, task);

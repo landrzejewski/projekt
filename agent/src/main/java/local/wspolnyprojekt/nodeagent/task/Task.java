@@ -6,6 +6,8 @@ import local.wspolnyprojekt.nodeagent.task.state.TaskStateNull;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
 import java.io.File;
 import java.util.concurrent.Semaphore;
 
@@ -17,6 +19,10 @@ public class Task {
 
     @Getter
     private final String taskId;
+
+    @Getter
+    @Setter
+    private boolean autorun = true; // Czy zadanie ma się automatycznie uruchamiać po pobraniu z GitHuba
 
     @Getter
     private TaskState status = new TaskStateNull();

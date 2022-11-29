@@ -49,7 +49,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         nodeRegistrationEntity.setHost(host);
         nodeRegistrationEntity.setPort(port);
         try {
-            HttpStatus status = sendRestPutRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}", agentId), nodeRegistrationEntity.getJsonString());
+            HttpStatus status = sendRestPostRequest(nodeConfigurationProperties.getRegisterUrl().replace("\\{nodeid\\}", agentId), nodeRegistrationEntity.getJsonString());
             if (status.is2xxSuccessful()) {
                 registered = true;
                 configurationPersistence.save(nodeConfigurationProperties.getConfigurationAgentIdKey(), agentId);
@@ -88,6 +88,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     }
 
     private ResponseEntity<String> sendRestRequest(String endpoint, String payload, HttpMethod method) {
+        log.info("Endpoint: {}",endpoint);
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

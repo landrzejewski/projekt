@@ -14,23 +14,24 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 @ApplicationScope
 public class TaskMessageService implements MessageService {
-    private static final Queue<TaskLogMessage> logs = new ConcurrentLinkedQueue<>();
+    private static final Queue<TaskLogMessage> taskLogs = new ConcurrentLinkedQueue<>();
     private static final Queue<TaskStatusMessage> taskStatus = new ConcurrentLinkedQueue<>();
 
     @Override
     public void save(TaskLogMessage logEntry) {
-        logs.add(logEntry);
+        log.info("TaskLogMessage: {}", logEntry);
+        taskLogs.add(logEntry);
     }
 
     @Override
     public void save(TaskStatusMessage taskStatusMessage) {
-        log.info("#{}",taskStatusMessage);
+        log.info("TaskStatusMessage: {}", taskStatusMessage);
         taskStatus.add(taskStatusMessage);
     }
 
     @Override
     public boolean isLogQueueEmpty() {
-        return logs.isEmpty();
+        return taskLogs.isEmpty();
     }
 
     @Override
@@ -40,7 +41,7 @@ public class TaskMessageService implements MessageService {
 
     @Override
     public Optional<TaskLogMessage> getLogMessage() {
-        return Optional.ofNullable(logs.poll());
+        return Optional.ofNullable(taskLogs.poll());
     }
 
     @Override

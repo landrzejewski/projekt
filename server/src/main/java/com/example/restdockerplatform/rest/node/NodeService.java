@@ -93,7 +93,7 @@ public class NodeService {
 
     private void sendTask(NodeEntity node, String user, String project, String taskId) {
 
-        final String url = gitHubConfigurationConfig.getGitHubRepositoryUrl() + project + GIT_EXTENSION;
+        final String url = gitHubConfigurationConfig.getRepositoryURI() + project + GIT_EXTENSION;
 
         final RequestDetails requestDetails = gitCloneRequestDetails(url, user, taskId);
 

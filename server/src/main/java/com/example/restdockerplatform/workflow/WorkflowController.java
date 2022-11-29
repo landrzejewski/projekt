@@ -3,10 +3,7 @@ package com.example.restdockerplatform.workflow;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class WorkflowController {
@@ -18,7 +15,7 @@ public class WorkflowController {
     }
 
 
-    @PostMapping("/taskstatus/{id}")
+    @PutMapping("/taskstatus/{id}")
     public ResponseEntity<String> updateTaskStatus(@RequestBody TaskStatusMessage taskStatusMessage,
                                                    @PathVariable("id") String taskId) {
         try {
@@ -30,7 +27,7 @@ public class WorkflowController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/tasklog/{id}")
+    @PutMapping("/tasklog/{id}")
     public ResponseEntity<String> appendLog(@RequestBody TaskLogMessage taskLogMessage,
                                             @PathVariable("id") String taskId) {
         try {
