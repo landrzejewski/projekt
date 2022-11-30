@@ -21,10 +21,6 @@ public class Task {
     private final String taskId;
 
     @Getter
-    @Setter
-    private boolean autorun = true; // Czy zadanie ma się automatycznie uruchamiać po pobraniu z GitHuba
-
-    @Getter
     private TaskState status = new TaskStateNull();
 
     @Getter

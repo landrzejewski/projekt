@@ -1,5 +1,7 @@
 package local.wspolnyprojekt.nodeagent.git;
 
+import local.wspolnyprojekt.nodeagent.configuration.ConfigurationPersistence;
+import local.wspolnyprojekt.nodeagent.configuration.NodeConfigurationProperties;
 import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.TaskAutorunService;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateAllocated;
@@ -19,6 +21,7 @@ public class JGitClient implements GitClient {
 
     private final Credentials credentials;
     private final TaskAutorunService taskAutorunService;
+    private final NodeConfigurationProperties configurationProperties;
 
     @Async
     @Override
@@ -35,7 +38,7 @@ public class JGitClient implements GitClient {
             try {
                 gitCommand.call().close();
                 task.setStatus(new TaskStateReady());
-                if(task.isAutorun()) {
+                if (configurationProperties.getTaskAutorun()) {
                     taskAutorunService.addToAutorun(task);
                 }
             } catch (Exception e) {
@@ -56,6 +59,9 @@ public class JGitClient implements GitClient {
             try (var gitCommand = Git.open(task.getWorkspaceAsFile())) {
                 gitCommand.pull().call().isSuccessful();
                 task.setStatus(new TaskStateReady());
+                if (configurationProperties.getTaskAutorun()) {
+                    taskAutorunService.addToAutorun(task);
+                }
             } catch (Exception e) {
                 task.setStatus(new TaskStateFail(), e.getMessage());
             } finally {
