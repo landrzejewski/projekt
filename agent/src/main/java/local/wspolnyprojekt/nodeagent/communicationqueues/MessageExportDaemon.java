@@ -34,7 +34,6 @@ public class MessageExportDaemon {
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
     void exportTaskLogs() {
         if(!serverCommunicationService.isRegistered()) {
-            serverCommunicationService.registerAgent();
             return;
         }
 

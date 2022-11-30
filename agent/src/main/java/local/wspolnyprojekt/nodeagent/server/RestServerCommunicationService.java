@@ -9,11 +9,13 @@ import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @ApplicationScope
@@ -65,37 +67,30 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     }
 
     private HttpStatus sendRestPostRequest(String endpoint, String payload) {
-//        var restTemplate = new RestTemplate();
-//        var headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<String> request = new HttpEntity<>(payload, headers);
-//        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
-//        return response.getStatusCode();
-//        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
         return sendRestRequest(endpoint, payload, HttpMethod.POST).getStatusCode();
     }
 
     private HttpStatus sendRestPutRequest(String endpoint, String payload) {
-//        var restTemplate = new RestTemplate();
-//        var headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<String> request = new HttpEntity<>(payload, headers);
-////        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
-//        ResponseEntity<String> response = restTemplate.exchange(endpoint, HttpMethod.PUT, request, String.class);
-//        return response.getStatusCode();
-//        log.info("request result: {} -> {}", response.getBody(), response.getStatusCode());
         return sendRestRequest(endpoint, payload, HttpMethod.PUT).getStatusCode();
     }
 
     private ResponseEntity<String> sendRestRequest(String endpoint, String payload, HttpMethod method) {
-        log.info("Endpoint: {}",endpoint);
+        log.info("Endpoint: {}", endpoint);
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(payload, headers);
-//        ResponseEntity<String> response = restTemplate.postForEntity(endpoint, request, String.class);
         ResponseEntity<String> response = restTemplate.exchange(endpoint, method, request, String.class);
         return response;
+    }
+
+    @Scheduled(fixedDelay = 3, timeUnit = TimeUnit.SECONDS)
+    private void checkIfServerIsOnlineAndRegister() {
+        // TODO Nie ma na razie endpointa PING na serwerze, więc nie ma sprawdzania
+        // Tylko rejestrowanie przy starcie
+        if (!isRegistered()) {
+            registerAgent();
+        }
     }
 
 }
