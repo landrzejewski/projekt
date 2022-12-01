@@ -21,7 +21,7 @@ public class TaskAutorunService {
     private final TasksService tasksService;
 
     @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
-    private void autorun() {
+    void autorun() {
         while (!tasksToAutorun.isEmpty()) {
             Task task = tasksToAutorun.poll();
             try {

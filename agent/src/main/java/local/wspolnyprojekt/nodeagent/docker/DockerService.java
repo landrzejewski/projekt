@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
-import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.Arrays;
 
