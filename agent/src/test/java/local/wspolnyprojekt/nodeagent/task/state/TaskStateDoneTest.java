@@ -1,36 +1,42 @@
-package local.wspolnyproject.nodeagent.task.state;
+package local.wspolnyprojekt.nodeagent.task.state;
 
 import local.wspolnyprojekt.nodeagent.task.state.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_DELETED;
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_DONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class TaskStateDeletedTest {
+class TaskStateDoneTest {
     private TaskState taskState;
 
     @BeforeEach
     void init() {
-        taskState = new TaskStateDeleted();
+        taskState = new TaskStateDone();
     }
 
     @Test
-    void shouldGiveDeletedDtoStatus() {
-        assertThat(taskState.getDtoTaskStatus()).isEqualTo(TASK_STATUS_DELETED);
+    void shouldGiveDonedDtoStatus() {
+        assertThat(taskState.getDtoTaskStatus()).isEqualTo(TASK_STATUS_DONE);
     }
 
     @Test
-    void shouldDeleteGiveDeletedOrNullState() {
-        assertThat(taskState.delete(true)).isInstanceOf(TaskStateNull.class);
-        assertThat(taskState.delete(false)).isInstanceOf(TaskStateDeleted.class);
+    void shouldFtpGiveReadyOrFailTaskState() {
+        assertThat(taskState.ftp(true)).isInstanceOf(TaskStateReady.class);
+        assertThat(taskState.ftp(false)).isInstanceOf(TaskStateFail.class);
     }
 
     @Test
-    void shouldFtpThrowIllegalStateException() {
-        assertThatThrownBy(() -> taskState.ftp(true)).isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> taskState.ftp(false)).isInstanceOf(IllegalStateException.class);
+    void shouldGitPullGiveReadyOrFailTaskState() {
+        assertThat(taskState.gitPull(true)).isInstanceOf(TaskStateReady.class);
+        assertThat(taskState.gitPull(false)).isInstanceOf(TaskStateFail.class);
+    }
+
+    @Test
+    void shouldStartGiveRunningOrFailTaskState() {
+        assertThat(taskState.start(true)).isInstanceOf(TaskStateRunning.class);
+        assertThat(taskState.start(false)).isInstanceOf(TaskStateFail.class);
     }
 
     @Test
@@ -46,21 +52,15 @@ class TaskStateDeletedTest {
     }
 
     @Test
-    void shouldGitPullThrowIllegalStateException() {
-        assertThatThrownBy(() -> taskState.gitPull(true)).isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> taskState.gitPull(false)).isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void shouldStartThrowIllegalStateException() {
-        assertThatThrownBy(() -> taskState.start(true)).isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> taskState.start(false)).isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
     void shouldStopThrowIllegalStateException() {
         assertThatThrownBy(() -> taskState.stop(true)).isInstanceOf(IllegalStateException.class);
         assertThatThrownBy(() -> taskState.stop(false)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldDeleteThrowIllegalStateException() {
+        assertThatThrownBy(() -> taskState.delete(true)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> taskState.delete(false)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
