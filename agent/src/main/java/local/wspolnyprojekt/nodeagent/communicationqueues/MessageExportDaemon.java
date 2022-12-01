@@ -21,8 +21,8 @@ public class MessageExportDaemon {
     private final TasksService tasksService;
 
 
-    @Scheduled(fixedDelay = 100, timeUnit = TimeUnit.MILLISECONDS)
-    void exportTaskStatus() {
+    @Scheduled(fixedDelay = 1, timeUnit = TimeUnit.SECONDS)
+    void exportTaskStatuses() {
         if (!serverCommunicationService.isRegistered())
             return;
         if (!taskMessageService.isStatusQueueEmpty()) {

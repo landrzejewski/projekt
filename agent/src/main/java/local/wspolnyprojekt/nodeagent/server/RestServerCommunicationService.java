@@ -90,7 +90,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     @Scheduled(fixedDelay = 3, timeUnit = TimeUnit.SECONDS)
     private void checkIfServerIsOnlineAndRegister() {
         // TODO Nie ma na razie endpointa PING na serwerze, więc nie ma sprawdzania
-        // Tylko rejestrowanie przy starcie
+        // Tylko cleanup i rejestrowanie przy starcie
         if (!isRegistered()) {
             dockerService.cleanupAfterRestart();
             registerAgent();

@@ -86,6 +86,21 @@ public class DockerService {
         }
     }
 
+    public void cleanupAfterRestart() {
+        if(!isClean) {
+            File workspaceRoot = workspaceUtils.getWorkspaceDirAsFile();
+            var oldTasks = Arrays.stream(workspaceRoot.listFiles()).filter(File::isDirectory).map(File::getName).toList();
+            for (String taskId : oldTasks) {
+                log.info("Cleanup old task: {}", taskId);
+                Task task = new Task(null, workspaceUtils, taskId);
+                down(task);
+                cleanup(task);
+                delete(task);
+            }
+            isClean = true;
+        }
+    }
+
     private int executeDockerComposeCommand(String[] args, Task task) {
         ShellCommand shellCommand = new ShellCommand();
         shellCommand.setCommand("docker-compose");
@@ -102,19 +117,5 @@ public class DockerService {
         return commandExecutorService.executeCommand(shellCommand, task.getTaskId());
     }
 
-    public void cleanupAfterRestart() {
-        if(!isClean) {
-            File workspaceRoot = workspaceUtils.getWorkspaceDirAsFile();
-            var oldTasks = Arrays.stream(workspaceRoot.listFiles()).filter(File::isDirectory).map(File::getName).toList();
-            for (String taskId : oldTasks) {
-                log.info("Cleanup old task: {}", taskId);
-                Task task = new Task(null, workspaceUtils, taskId);
-                down(task);
-                cleanup(task);
-                delete(task);
-            }
-            isClean = true;
-        }
-    }
 
 }
