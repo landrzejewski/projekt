@@ -24,8 +24,8 @@ public class WorkspaceUtils {
         return new File(getWorkspaceDirAsString(taskid));
     }
 
-    private String getWorkspaceDirAsString(String taskid) {
-        return nodeConfigurationProperties.getWorkspaceDirectory() + File.separator + taskid + File.separator;
+    public File getWorkspaceDirAsFile() {
+        return getWorkspaceDirAsFile(null);
     }
 
     public File getFileInWorkspaceAsFile(String taskid, String filename) {
@@ -52,6 +52,10 @@ public class WorkspaceUtils {
         return deleteDirectory(getWorkspaceDirAsFile(taskId));
     }
 
+    private String getWorkspaceDirAsString(String taskid) {
+        return nodeConfigurationProperties.getWorkspaceDirectory()
+                + (taskid == null ? "" : File.separator + taskid + File.separator);
+    }
 
     private boolean deleteDirectory(File directory) {
         try {

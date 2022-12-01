@@ -21,6 +21,7 @@ public class CommandExecutorService {
     private final LogPersistenceService logPersistenceService;
     private final WorkspaceUtils workspaceUtils;
 
+
     public int executeCommand(ShellCommand shellCommand, String taskid) {
 //        log.info("task: {} command: {}", taskid, shellCommand);
 //        log.info("workspace: {}", workspaceUtils.getWorkspaceDirAsFile(taskid).getAbsolutePath());
@@ -38,7 +39,6 @@ public class CommandExecutorService {
 //            log.info("exit: {} future: {}", exitCode, futureResult);
             return exitCode;
         } catch (Exception exception) {
-            // TODO Obsługa poszczególnych klas wyjątków - na razie jest "aby ruszyło"
             System.out.println(exception.getMessage());
             return -1;
         }

@@ -12,7 +12,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.Arrays;
 
 @Slf4j
 @ApplicationScope
@@ -22,6 +24,8 @@ public class DockerService {
 
     private final CommandExecutorService commandExecutorService;
     private final WorkspaceUtils workspaceUtils;
+
+    private boolean isClean = false;
 
     @Async
     public void buildAndRun(Task task) {
@@ -97,6 +101,21 @@ public class DockerService {
         shellCommand.setArgs(args);
         shellCommand.setTimeoutInSeconds(-1);
         return commandExecutorService.executeCommand(shellCommand, task.getTaskId());
+    }
+
+    public void cleanupAfterRestart() {
+        if(!isClean) {
+            File workspaceRoot = workspaceUtils.getWorkspaceDirAsFile();
+            var oldTasks = Arrays.stream(workspaceRoot.listFiles()).filter(File::isDirectory).map(File::getName).toList();
+            for (String taskId : oldTasks) {
+                log.info("Cleanup old task: {}", taskId);
+                Task task = new Task(null, workspaceUtils, taskId);
+                down(task);
+                cleanup(task);
+                delete(task);
+            }
+            isClean = true;
+        }
     }
 
 }

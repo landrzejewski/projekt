@@ -3,6 +3,7 @@ package local.wspolnyprojekt.nodeagent.server;
 import local.wspolnyprojekt.nodeagent.configuration.ConfigurationPersistence;
 import local.wspolnyprojekt.nodeagent.configuration.NodeConfigurationProperties;
 import local.wspolnyprojekt.nodeagent.configuration.NodeInternetInterface;
+import local.wspolnyprojekt.nodeagent.docker.DockerService;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.NodeRegistrationEntity;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
@@ -26,6 +27,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     private final NodeInternetInterface nodeInternetInterface;
     private final NodeConfigurationProperties nodeConfigurationProperties;
     private final ConfigurationPersistence configurationPersistence;
+    private final DockerService dockerService;
     private boolean registered = false;
 
     @Override
@@ -40,6 +42,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
 
     @Override
     public void registerAgent() {
+        log.info("Register");
         String agentId = configurationPersistence.load(nodeConfigurationProperties.getConfigurationAgentIdKey()).orElse(UUID.randomUUID().toString());
         registerAgent(agentId, nodeInternetInterface.getIp(), nodeInternetInterface.getPort());
     }
@@ -89,6 +92,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         // TODO Nie ma na razie endpointa PING na serwerze, więc nie ma sprawdzania
         // Tylko rejestrowanie przy starcie
         if (!isRegistered()) {
+            dockerService.cleanupAfterRestart();
             registerAgent();
         }
     }

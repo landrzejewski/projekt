@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class LogPersistenceService implements OutputPersistence{
+public class LogPersistenceService implements OutputPersistence {
 
     private final FileOutputPersistence fileOutputPersistence;
     private final TaskMessageService taskMessageService;

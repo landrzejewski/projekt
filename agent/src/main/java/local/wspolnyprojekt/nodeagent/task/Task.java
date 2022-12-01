@@ -46,11 +46,12 @@ public class Task {
 
     public void setStatus(TaskState status, String description) {
         this.status = status;
-        statusBroadcaster.broadcastStatusChange(this, description);
+        if (statusBroadcaster != null)
+            statusBroadcaster.broadcastStatusChange(this, description);
     }
 
     public void setStatus(TaskState status) {
-        setStatus(status,"");
+        setStatus(status, "");
     }
 
- }
+}

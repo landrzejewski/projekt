@@ -1,7 +1,9 @@
 package local.wspolnyprojekt.nodeagent.communicationqueues;
 
+import local.wspolnyprojekt.nodeagent.task.TasksService;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -13,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Slf4j
 @Service
 @ApplicationScope
+@RequiredArgsConstructor
 public class TaskMessageService implements MessageService {
     private static final Queue<TaskLogMessage> taskLogs = new ConcurrentLinkedQueue<>();
     private static final Queue<TaskStatusMessage> taskStatus = new ConcurrentLinkedQueue<>();
