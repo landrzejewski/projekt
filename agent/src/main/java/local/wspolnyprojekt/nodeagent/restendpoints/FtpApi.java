@@ -32,19 +32,16 @@ public class FtpApi {
 
     @PostMapping(value = RestEndpoints.FTP_ENDPOINT)
     void postFile(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid, @PathVariable(name = FILENAME_PATH_VARIABLE) String filename, InputStream inputStream) throws IOException {
-        if(!tasksService.hasTask(taskid)) {
+        if (!tasksService.hasTask(taskid)) {
             tasksService.addTask(taskid);
         }
-        try (inputStream; FileOutputStream outputStream = workspaceUtils.getFileAsFileOutputStream(taskid, filename)) {
-            IOUtils.copy(inputStream, outputStream);
-            tasksService.getTask(taskid).setStatus(new TaskStateReady());
-        }
+        workspaceUtils.saveInputStreamToWorkspace(taskid, inputStream, filename);
+        tasksService.getTask(taskid).setStatus(new TaskStateReady());
     }
 
     @DeleteMapping(RestEndpoints.FTP_ENDPOINT)
     void deleteFile(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid, @PathVariable(name = FILENAME_PATH_VARIABLE) String filename) throws IOException {
-        File file = workspaceUtils.getFileInWorkspaceAsFile(taskid, filename);
-        if (!file.delete()) {
+        if (!workspaceUtils.deleteFileInTaskWorkspace(taskid, filename)) {
             throw new IOException("Can't delete " + filename);
         }
     }

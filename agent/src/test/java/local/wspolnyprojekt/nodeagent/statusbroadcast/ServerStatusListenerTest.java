@@ -40,6 +40,7 @@ class ServerStatusListenerTest {
     @Test
     void shouldInvokeTaskMessageServiceWithCorrectDescriptionAndTaskId() {
         // TODO Zbadać czemu bez ręcznego uruchomienia inicjalizacji mocków nie chce działać ArgumentCapture
+        // a przy TaskApiTest działa bez tegp
         openMocks(this);
 
         String taskId = UUID.randomUUID().toString();

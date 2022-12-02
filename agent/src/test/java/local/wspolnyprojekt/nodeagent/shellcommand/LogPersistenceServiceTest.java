@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -42,6 +43,6 @@ class LogPersistenceServiceTest {
     void shouldSaveInvokeTaskMessageService() {
         String localtime = LocalDateTime.now().toString();
         logPersistenceService.save(taskId, text);
-        verify(taskMessageService, times(1)).save(new TaskLogMessage(localtime,taskId,text));
+        verify(taskMessageService, times(1)).save(any(TaskLogMessage.class));
     }
 }
