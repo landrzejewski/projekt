@@ -47,6 +47,10 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         registerAgent(agentId, nodeInternetInterface.getIp(), nodeInternetInterface.getPort());
     }
 
+    @Override
+    public boolean isRegistered() {
+        return registered;
+    }
 
     private void registerAgent(String agentId, String host, int port) {
         NodeRegistrationEntity nodeRegistrationEntity = new NodeRegistrationEntity();
@@ -64,10 +68,6 @@ public class RestServerCommunicationService implements ServerCommunicationServic
         }
     }
 
-    @Override
-    public boolean isRegistered() {
-        return registered;
-    }
 
     private HttpStatus sendRestPostRequest(String endpoint, String payload) {
         return sendRestRequest(endpoint, payload, HttpMethod.POST).getStatusCode();
@@ -78,7 +78,7 @@ public class RestServerCommunicationService implements ServerCommunicationServic
     }
 
     private ResponseEntity<String> sendRestRequest(String endpoint, String payload, HttpMethod method) {
-        log.info("Endpoint: {}", endpoint);
+        log.info("Endpoint: {} Payload: {}", endpoint, payload);
         var restTemplate = new RestTemplate();
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -5,13 +5,11 @@ import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateDone;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateStopped;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
-import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
-import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
+import local.wspolnyprojekt.nodeagent.shellcommand.ShellCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.FileNotFoundException;
@@ -33,8 +31,6 @@ class DockerServiceTest {
 
     @BeforeEach
     void init() {
-//        commandExecutorService = Mockito.mock(CommandExecutorService.class);
-//        workspaceUtils = Mockito.mock(WorkspaceUtils.class);
         dockerService = new DockerService(commandExecutorService, workspaceUtils);
         task = new Task(null, workspaceUtils, taskId);
     }

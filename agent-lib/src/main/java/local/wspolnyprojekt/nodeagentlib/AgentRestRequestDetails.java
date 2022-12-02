@@ -9,7 +9,6 @@ public class AgentRestRequestDetails {
     /**
      * Bez taskId, bo credentials jest globalne, a nie per task
      */
-
     public static RequestDetails gitCredentialsRequestDetails(String username, String password) {
         return gitCredentialsRequestDetails(new GitCredentials(username, password));
     }
