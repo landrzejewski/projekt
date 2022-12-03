@@ -25,7 +25,7 @@ public class TaskAutorunService {
         while (!tasksToAutorun.isEmpty()) {
             Task task = tasksToAutorun.poll();
             try {
-                log.info("Autorun: {}",task);
+                log.info("Autorun: {}", task);
                 tasksService.executeCommand(task, TaskCommand.TASK_COMMAND_START);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
@@ -34,7 +34,7 @@ public class TaskAutorunService {
     }
 
     public void addToAutorun(Task task) {
-        log.info("Add to autorun: {}",task);
+        log.info("Add to autorun: {}", task);
         tasksToAutorun.add(task);
     }
 

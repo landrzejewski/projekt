@@ -73,7 +73,8 @@ class DockerServiceTest {
     void shouldCallWorkspaceUtilsAfterGetLog() {
         try {
             dockerService.getLog(task);
-            verify(workspaceUtils, times(1)).getFileAsInputStreamResource(taskId, "output.log");
+            verify(workspaceUtils, times(1))
+                    .getFileAsInputStreamResource(taskId, "output.log");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -111,6 +112,6 @@ class DockerServiceTest {
     @Test
     void shouldCallWorkspaceUtilsAfterDelete() {
         dockerService.delete(task);
-        verify(workspaceUtils,times(1)).deleteWorkspace(taskId);
+        verify(workspaceUtils, times(1)).deleteWorkspace(taskId);
     }
 }

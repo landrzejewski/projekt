@@ -1,6 +1,5 @@
 package local.wspolnyprojekt.nodeagent.task.state;
 
-import local.wspolnyprojekt.nodeagent.task.state.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

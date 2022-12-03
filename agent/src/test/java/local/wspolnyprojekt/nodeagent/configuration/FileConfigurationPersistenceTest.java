@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -47,22 +46,22 @@ class FileConfigurationPersistenceTest {
 
     @Test
     void shouldCorrectlyRetrieveStoredProperty() {
-        fileConfigurationPersistence.save("key","value");
+        fileConfigurationPersistence.save("key", "value");
         assertThat(fileConfigurationPersistence.load("key").isPresent()).isTrue();
         assertThat(fileConfigurationPersistence.load("key").get()).isEqualTo("value");
     }
 
     @Test
     void shouldNotThrowExceptionWhenKeyIsNotStored() {
-        fileConfigurationPersistence.save("key","value");
+        fileConfigurationPersistence.save("key", "value");
         assertThat(fileConfigurationPersistence.load("unknownkey").isPresent()).isFalse();
     }
 
     @Test
     void shouldReturnUpdatedValue() {
-        fileConfigurationPersistence.save("key","firstvalue");
+        fileConfigurationPersistence.save("key", "firstvalue");
         assertThat(fileConfigurationPersistence.load("key").get()).isEqualTo("firstvalue");
-        fileConfigurationPersistence.save("key","updatedvalue");
+        fileConfigurationPersistence.save("key", "updatedvalue");
         assertThat(fileConfigurationPersistence.load("key").get()).isEqualTo("updatedvalue");
     }
 }

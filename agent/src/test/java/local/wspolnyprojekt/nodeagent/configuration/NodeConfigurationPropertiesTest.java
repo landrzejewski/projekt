@@ -18,43 +18,51 @@ class NodeConfigurationPropertiesTest {
 
     @Test
     void shouldReturnCorrectWorkspaceDirectory() {
-        assertThat(nodeConfigurationProperties.getWorkspaceDirectory()).isEqualTo("tmp");
+        assertThat(nodeConfigurationProperties.getWorkspaceDirectory())
+                .isEqualTo("tmp");
     }
 
     @Test
     void shouldReturnCorrectServerUrl() {
-        assertThat(nodeConfigurationProperties.getServerUrl()).isEqualTo("http://127.0.0.1:8080");
+        assertThat(nodeConfigurationProperties.getServerUrl())
+                .isEqualTo("http://127.0.0.1:8080");
     }
 
     @Test
     void shouldReturnCorrectRegisterUrl() {
-        assertThat(nodeConfigurationProperties.getRegisterUrl()).contains("http://127.0.0.1:8080/api/node/\\{nodeid\\}");
+        assertThat(nodeConfigurationProperties.getRegisterUrl())
+                .contains("http://127.0.0.1:8080/api/node/\\{nodeid\\}");
     }
 
     @Test
     void shouldReturnCorrectTaskLogUrlWithTaskIdInIt() {
         String taskId = UUID.randomUUID().toString();
-        assertThat(nodeConfigurationProperties.getTaskLogUrl(taskId)).isEqualTo("http://127.0.0.1:8080/tasklog/"+taskId);
+        assertThat(nodeConfigurationProperties.getTaskLogUrl(taskId))
+                .isEqualTo("http://127.0.0.1:8080/tasklog/" + taskId);
     }
 
     @Test
     void shouldReturnCorrectTaskStatusUrlWithTaskIdInIt() {
         String taskId = UUID.randomUUID().toString();
-        assertThat(nodeConfigurationProperties.getTaskStatusUrl(taskId)).isEqualTo("http://127.0.0.1:8080/taskstatus/"+taskId);
+        assertThat(nodeConfigurationProperties.getTaskStatusUrl(taskId))
+                .isEqualTo("http://127.0.0.1:8080/taskstatus/" + taskId);
     }
 
     @Test
     void shouldReturnCorrectConfigurationPersistenceFileName() {
-        assertThat(nodeConfigurationProperties.getConfigurationPersistenceFileName()).isEqualTo("tmp\\configuration.properties");
+        assertThat(nodeConfigurationProperties.getConfigurationPersistenceFileName())
+                .isEqualTo("tmp\\configuration.properties");
     }
 
     @Test
     void shouldReturnCorrectConfigurationAgentIdKey() {
-        assertThat(nodeConfigurationProperties.getConfigurationAgentIdKey()).isEqualTo("agent.id");
+        assertThat(nodeConfigurationProperties.getConfigurationAgentIdKey())
+                .isEqualTo("agent.id");
     }
 
     @Test
     void shouldReturnCorrectTaskAutorunState() {
-        assertThat(nodeConfigurationProperties.getTaskAutorun()).isTrue();
+        assertThat(nodeConfigurationProperties.getTaskAutorun())
+                .isTrue();
     }
 }

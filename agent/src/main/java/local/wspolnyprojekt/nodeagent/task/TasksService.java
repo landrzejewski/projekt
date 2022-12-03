@@ -20,12 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.synchronizedMap;
 
@@ -58,7 +54,7 @@ public class TasksService {
 
 
     public ResponseEntity executeCommand(Task task, TaskCommand taskCommand) throws FileNotFoundException {
-        return executeCommand(task.getTaskId(),taskCommand);
+        return executeCommand(task.getTaskId(), taskCommand);
     }
 
     public boolean hasTask(String taskId) {
@@ -102,7 +98,7 @@ public class TasksService {
     public ResponseEntity start(Task task) {
         log.info("Task start: {}", task);
         dockerService.buildAndRun(task);
-        return ResponseEntity.ok().build(); // TODO
+        return ResponseEntity.ok().build();
     }
 
     public ResponseEntity start(String taskid) {
@@ -111,12 +107,12 @@ public class TasksService {
 
     public ResponseEntity down(Task task) {
         dockerService.down(task);
-        return ResponseEntity.ok().build(); // TODO
+        return ResponseEntity.ok().build();
     }
 
     public ResponseEntity cleanup(Task task) {
         dockerService.cleanup(task);
-        return ResponseEntity.ok().build(); // TODO
+        return ResponseEntity.ok().build();
     }
 
     public ResponseEntity delete(Task task) {
@@ -125,7 +121,7 @@ public class TasksService {
         } else {
             dockerService.delete(task);
         }
-        return ResponseEntity.ok().build(); // TODO
+        return ResponseEntity.ok().build();
     }
 
     public InputStreamResource getLog(Task task) throws FileNotFoundException {

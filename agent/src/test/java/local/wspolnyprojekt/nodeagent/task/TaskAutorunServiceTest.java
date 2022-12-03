@@ -23,11 +23,11 @@ class TaskAutorunServiceTest {
 
     @Test
     void shouldAutostartAddedTask() {
-        Task task = new Task(null,null,taskId);
+        Task task = new Task(null, null, taskId);
         taskAutorunService.addToAutorun(task);
         taskAutorunService.autorun();
         try {
-            verify(tasksService,times(1)).executeCommand(task, TaskCommand.TASK_COMMAND_START);
+            verify(tasksService, times(1)).executeCommand(task, TaskCommand.TASK_COMMAND_START);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

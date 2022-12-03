@@ -56,8 +56,8 @@ class TaskTest {
         StatusBroadcaster statusBroadcaster = Mockito.mock(StatusBroadcaster.class);
         Task task = new Task(statusBroadcaster, null, null);
         task.setStatus(new TaskStateReady());
-        task.setStatus(new TaskStateFail(),"FAIL");
-        Mockito.verify(statusBroadcaster,times(1)).broadcastStatusChange(task,"");
-        Mockito.verify(statusBroadcaster,times(1)).broadcastStatusChange(task,"FAIL");
+        task.setStatus(new TaskStateFail(), "FAIL");
+        Mockito.verify(statusBroadcaster, times(1)).broadcastStatusChange(task, "");
+        Mockito.verify(statusBroadcaster, times(1)).broadcastStatusChange(task, "FAIL");
     }
 }

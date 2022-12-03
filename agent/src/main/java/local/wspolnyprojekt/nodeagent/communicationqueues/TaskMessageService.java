@@ -1,6 +1,5 @@
 package local.wspolnyprojekt.nodeagent.communicationqueues;
 
-import local.wspolnyprojekt.nodeagent.task.TasksService;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskLogMessage;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import lombok.RequiredArgsConstructor;

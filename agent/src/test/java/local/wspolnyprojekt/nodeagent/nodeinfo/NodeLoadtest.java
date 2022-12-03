@@ -22,7 +22,7 @@ class NodeLoadtest {
         Mockito.when(workspaceUtils.getWorkspaceDirAsFile()).thenReturn(new File("."));
         Mockito.when(tasksService.getNumberOfTasks()).thenReturn(10);
         Mockito.when(tasksService.getNumberOfRunningTasks()).thenReturn(5);
-        nodeLoad = new NodeLoad(workspaceUtils,tasksService);
+        nodeLoad = new NodeLoad(workspaceUtils, tasksService);
     }
 
     @Test

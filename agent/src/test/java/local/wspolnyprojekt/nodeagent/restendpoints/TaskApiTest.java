@@ -15,16 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.io.FileNotFoundException;
 import java.util.UUID;
 
-import static local.wspolnyprojekt.nodeagentlib.AgentRestRequestDetails.getTaskStartRequestDetails;
 import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASKID_PATH_VARIABLE;
 import static local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints.TASK_ENDPOINT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

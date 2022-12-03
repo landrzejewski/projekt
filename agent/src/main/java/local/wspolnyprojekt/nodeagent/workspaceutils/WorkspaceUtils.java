@@ -1,7 +1,6 @@
 package local.wspolnyprojekt.nodeagent.workspaceutils;
 
 import local.wspolnyprojekt.nodeagent.configuration.NodeConfigurationProperties;
-import local.wspolnyprojekt.nodeagent.task.state.TaskStateReady;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -47,6 +46,7 @@ public class WorkspaceUtils {
 
     /**
      * Usuwanie workspace taska (wszystkie pliki)
+     *
      * @param taskId - identyfikator taska
      * @return - false jeśli nie dało się czegoś usunąć i jakieś "śmieci" pozostały na dysku
      */
@@ -54,7 +54,7 @@ public class WorkspaceUtils {
         return deleteDirectory(getWorkspaceDirAsFile(taskId));
     }
 
-    public boolean deleteFileInTaskWorkspace(String taskId, String filename ) {
+    public boolean deleteFileInTaskWorkspace(String taskId, String filename) {
         File file = getFileInWorkspaceAsFile(taskId, filename);
         return file.delete();
     }

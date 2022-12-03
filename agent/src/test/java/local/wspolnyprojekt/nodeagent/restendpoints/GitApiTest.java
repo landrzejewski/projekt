@@ -5,7 +5,6 @@ import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.TasksService;
 import local.wspolnyprojekt.nodeagentlib.dto.GitCredentials;
 import local.wspolnyprojekt.nodeagentlib.dto.GitResource;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

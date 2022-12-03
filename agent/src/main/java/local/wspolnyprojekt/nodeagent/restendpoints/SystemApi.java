@@ -14,7 +14,7 @@ public class SystemApi {
 
     @GetMapping(RestEndpoints.SYSTEM_LOAD)
     local.wspolnyprojekt.nodeagentlib.dto.NodeLoad getNodeLoad() {
-         return nodeLoad.getLoadData();
+        return nodeLoad.getLoadData();
     }
 
     @GetMapping(RestEndpoints.SYSTEM_PING)

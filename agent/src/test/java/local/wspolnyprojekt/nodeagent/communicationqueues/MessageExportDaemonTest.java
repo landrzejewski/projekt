@@ -39,14 +39,14 @@ class MessageExportDaemonTest {
 
         when(serverCommunicationService.isRegistered()).thenReturn(true);
         when(tasksService.hasTask(anyString())).thenReturn(true);
-        when(taskMessageService.isLogQueueEmpty()).thenReturn(false,true);
-        when(taskMessageService.isStatusQueueEmpty()).thenReturn(false,true);
+        when(taskMessageService.isLogQueueEmpty()).thenReturn(false, true);
+        when(taskMessageService.isStatusQueueEmpty()).thenReturn(false, true);
 
         when(taskMessageService.getLogMessage())
-                .thenReturn(Optional.ofNullable(taskLogMessage),Optional.empty());
+                .thenReturn(Optional.ofNullable(taskLogMessage), Optional.empty());
 
         when(taskMessageService.getStatusMessage())
-                .thenReturn(Optional.ofNullable(taskStatusMessage),Optional.empty());
+                .thenReturn(Optional.ofNullable(taskStatusMessage), Optional.empty());
 
         messageExportDaemon = new MessageExportDaemon(taskMessageService, serverCommunicationService, tasksService);
 

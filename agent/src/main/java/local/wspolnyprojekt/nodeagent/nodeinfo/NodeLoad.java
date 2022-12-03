@@ -10,7 +10,6 @@ import org.springframework.web.context.annotation.ApplicationScope;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
-
 @Service
 @ApplicationScope
 @RequiredArgsConstructor

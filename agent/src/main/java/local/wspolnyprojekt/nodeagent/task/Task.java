@@ -6,7 +6,6 @@ import local.wspolnyprojekt.nodeagent.task.state.TaskStateNull;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.io.File;
 import java.util.concurrent.Semaphore;

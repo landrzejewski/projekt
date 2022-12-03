@@ -16,8 +16,8 @@ public class LogPersistenceService implements OutputPersistence {
 
     @Override
     public void save(String taskid, String text) {
-        fileOutputPersistence.save(taskid,text);
-        taskMessageService.save(new TaskLogMessage(LocalDateTime.now().toString(),taskid,text));
+        fileOutputPersistence.save(taskid, text);
+        taskMessageService.save(new TaskLogMessage(LocalDateTime.now().toString(), taskid, text));
     }
 
 }

@@ -28,7 +28,7 @@ public class DockerService {
 
     @Async
     public void buildAndRun(Task task) {
-        log.info("Docker build and run: {}",task);
+        log.info("Docker build and run: {}", task);
         if (task.getSemaphore().tryAcquire()) {
             task.setStatus(new TaskStateRunning());
             var exitCode = executeDockerComposeCommand(new String[]{"up", "--build"}, task);
@@ -87,7 +87,7 @@ public class DockerService {
     }
 
     public void cleanupAfterRestart() {
-        if(!isClean) {
+        if (!isClean) {
             File workspaceRoot = workspaceUtils.getWorkspaceDirAsFile();
             var oldTasks = Arrays.stream(workspaceRoot.listFiles()).filter(File::isDirectory).map(File::getName).toList();
             for (String taskId : oldTasks) {

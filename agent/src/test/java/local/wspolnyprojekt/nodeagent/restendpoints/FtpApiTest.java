@@ -6,7 +6,6 @@ import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
@@ -30,7 +29,7 @@ class FtpApiTest {
         workspaceUtils = Mockito.mock(WorkspaceUtils.class);
         tasksService = Mockito.mock(TasksService.class);
         taskid = UUID.randomUUID().toString();
-        task = new Task(null,workspaceUtils,taskid);
+        task = new Task(null, workspaceUtils, taskid);
         ftpApi = new FtpApi(workspaceUtils, tasksService);
         when(tasksService.hasTask(anyString())).thenReturn(true);
         when(tasksService.getTask(taskid)).thenReturn(task);
@@ -52,7 +51,8 @@ class FtpApiTest {
         String filename = "filename";
         try {
             ftpApi.postFile(taskid, filename, null);
-            verify(workspaceUtils, times(1)).saveInputStreamToWorkspace(taskid, null, filename);
+            verify(workspaceUtils, times(1))
+                    .saveInputStreamToWorkspace(taskid, null, filename);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -64,7 +64,7 @@ class FtpApiTest {
         when(tasksService.hasTask(anyString())).thenReturn(false);
         try {
             ftpApi.postFile(taskid, filename, null);
-            verify(tasksService,times(1)).addTask(taskid);
+            verify(tasksService, times(1)).addTask(taskid);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

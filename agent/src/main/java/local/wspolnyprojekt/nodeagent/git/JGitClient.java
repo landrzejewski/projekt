@@ -1,6 +1,5 @@
 package local.wspolnyprojekt.nodeagent.git;
 
-import local.wspolnyprojekt.nodeagent.configuration.ConfigurationPersistence;
 import local.wspolnyprojekt.nodeagent.configuration.NodeConfigurationProperties;
 import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.TaskAutorunService;

@@ -5,8 +5,6 @@ import local.wspolnyprojekt.nodeagentlib.dto.TaskStatusMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Queue;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class TaskMessageServiceTest {
@@ -30,16 +28,17 @@ class TaskMessageServiceTest {
 
     @Test
     void shouldStatusQueueHasTwoMessages() {
-        taskMessageService.save(new TaskStatusMessage(null,null,null,null));
-        taskMessageService.save(new TaskStatusMessage(null,null,null,null));
+        taskMessageService.save(new TaskStatusMessage(null, null, null, null));
+        taskMessageService.save(new TaskStatusMessage(null, null, null, null));
         assertThat(taskMessageService.getStatusMessage()).isPresent();
         assertThat(taskMessageService.getStatusMessage()).isPresent();
         assertThat(taskMessageService.isStatusQueueEmpty()).isTrue();
     }
+
     @Test
     void shouldLogQueueHasTwoMessages() {
-        taskMessageService.save(new TaskLogMessage(null,null,null));
-        taskMessageService.save(new TaskLogMessage(null,null,null));
+        taskMessageService.save(new TaskLogMessage(null, null, null));
+        taskMessageService.save(new TaskLogMessage(null, null, null));
         assertThat(taskMessageService.getLogMessage()).isPresent();
         assertThat(taskMessageService.getLogMessage()).isPresent();
         assertThat(taskMessageService.isLogQueueEmpty()).isTrue();

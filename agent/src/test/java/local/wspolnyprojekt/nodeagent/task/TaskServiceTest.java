@@ -112,7 +112,7 @@ class TaskServiceTest {
     void shouldInvokeGetLogOnDockerService() {
         try {
             tasksService.getLog(task);
-            verify(dockerService,times(1)).getLog(task);
+            verify(dockerService, times(1)).getLog(task);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

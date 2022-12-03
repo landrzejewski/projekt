@@ -1,13 +1,11 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.TasksService;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateReady;
 import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

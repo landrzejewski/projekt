@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class FileOutputPersistence implements OutputPersistence {
     private final WorkspaceUtils workspaceUtils;
+
     @Override
     public void save(String taskid, String text) {
         File file = workspaceUtils.getFileInWorkspaceAsFile(taskid, "output.log");
