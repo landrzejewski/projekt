@@ -21,8 +21,8 @@ public class TaskApi {
 
     @PostMapping(RestEndpoints.TASK_ENDPOINT)
     ResponseEntity taskEndpoint(@PathVariable(name = TASKID_PATH_VARIABLE) String taskId, @RequestBody String taskCommandString) throws FileNotFoundException {
-        log.info("{}",taskCommandString);
-        return tasksService.executeCommand(taskId,TaskCommand.valueOf(taskCommandString.replace("\"","")));
+        log.info("{}", taskCommandString);
+        return tasksService.executeCommand(taskId, TaskCommand.valueOf(taskCommandString.replace("\"", "")));
     }
 
 }

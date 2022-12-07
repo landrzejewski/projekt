@@ -1,6 +1,5 @@
 package local.wspolnyprojekt.nodeagent.shellcommand;
 
-import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ public class CommandExecutorService {
     private final LogPersistenceService logPersistenceService;
     private final WorkspaceUtils workspaceUtils;
 
+
     public int executeCommand(ShellCommand shellCommand, String taskid) {
 //        log.info("task: {} command: {}", taskid, shellCommand);
 //        log.info("workspace: {}", workspaceUtils.getWorkspaceDirAsFile(taskid).getAbsolutePath());
@@ -34,11 +34,10 @@ public class CommandExecutorService {
             );
             var future = Executors.newSingleThreadExecutor().submit(outputGrabber);
             int exitCode = process.waitFor();
-            var futureResult = future.get();
+            var futureResult = future.get(); // Na chwilę obecną nie używane
 //            log.info("exit: {} future: {}", exitCode, futureResult);
             return exitCode;
         } catch (Exception exception) {
-            // TODO Obsługa poszczególnych klas wyjątków - na razie jest "aby ruszyło"
             System.out.println(exception.getMessage());
             return -1;
         }

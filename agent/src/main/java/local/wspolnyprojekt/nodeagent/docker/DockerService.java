@@ -2,10 +2,9 @@ package local.wspolnyprojekt.nodeagent.docker;
 
 import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.state.*;
-import local.wspolnyprojekt.nodeagentlib.dto.ShellCommand;
+import local.wspolnyprojekt.nodeagent.shellcommand.ShellCommand;
 import local.wspolnyprojekt.nodeagent.shellcommand.CommandExecutorService;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
-import local.wspolnyprojekt.nodeagentlib.dto.TaskStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.io.*;
+import java.util.Arrays;
 
 @Slf4j
 @ApplicationScope
@@ -24,8 +24,11 @@ public class DockerService {
     private final CommandExecutorService commandExecutorService;
     private final WorkspaceUtils workspaceUtils;
 
+    private boolean isClean = false;
+
     @Async
     public void buildAndRun(Task task) {
+        log.info("Docker build and run: {}", task);
         if (task.getSemaphore().tryAcquire()) {
             task.setStatus(new TaskStateRunning());
             var exitCode = executeDockerComposeCommand(new String[]{"up", "--build"}, task);
@@ -68,7 +71,7 @@ public class DockerService {
             task.setStatus(new TaskStateReady());
         } else {
             log.error("{} BUSY", task.getTaskId());
-            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie czyszczenia kontenerów, voluminów i obrazów?
         }
     }
 
@@ -79,7 +82,22 @@ public class DockerService {
             task.setStatus(new TaskStateDeleted());
         } else {
             log.error("{} BUSY", task.getTaskId());
-            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
+            throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie usunięcia workspace?
+        }
+    }
+
+    public void cleanupAfterRestart() {
+        if (!isClean) {
+            File workspaceRoot = workspaceUtils.getWorkspaceDirAsFile();
+            var oldTasks = Arrays.stream(workspaceRoot.listFiles()).filter(File::isDirectory).map(File::getName).toList();
+            for (String taskId : oldTasks) {
+                log.info("Cleanup old task: {}", taskId);
+                Task task = new Task(null, workspaceUtils, taskId);
+                down(task);
+                cleanup(task);
+                delete(task);
+            }
+            isClean = true;
         }
     }
 
@@ -98,5 +116,6 @@ public class DockerService {
         shellCommand.setTimeoutInSeconds(-1);
         return commandExecutorService.executeCommand(shellCommand, task.getTaskId());
     }
+
 
 }

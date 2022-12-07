@@ -1,24 +1,23 @@
-package local.wspolnyproject.nodeagent.task.state;
+package local.wspolnyprojekt.nodeagent.task.state;
 
-import local.wspolnyprojekt.nodeagent.task.state.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_STOPPED;
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_FAIL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class TaskStateStoppedTest {
+class TaskStateFailTest {
     private TaskState taskState;
 
     @BeforeEach
     void init() {
-        taskState = new TaskStateStopped();
+        taskState = new TaskStateFail();
     }
 
     @Test
-    void shouldGiveStoppedDtoStatus() {
-        assertThat(taskState.getDtoTaskStatus()).isEqualTo(TASK_STATUS_STOPPED);
+    void shouldGiveFailDtoStatus() {
+        assertThat(taskState.getDtoTaskStatus()).isEqualTo(TASK_STATUS_FAIL);
     }
 
     @Test
@@ -28,15 +27,15 @@ class TaskStateStoppedTest {
     }
 
     @Test
-    void shouldFtpGiveReadyOrFailTaskState() {
-        assertThat(taskState.ftp(true)).isInstanceOf(TaskStateReady.class);
-        assertThat(taskState.ftp(false)).isInstanceOf(TaskStateFail.class);
-    }
-
-    @Test
     void shouldGitPullGiveReadyOrFailTaskState() {
         assertThat(taskState.gitPull(true)).isInstanceOf(TaskStateReady.class);
         assertThat(taskState.gitPull(false)).isInstanceOf(TaskStateFail.class);
+    }
+
+    @Test
+    void shouldFtpGiveReadyOrFailTaskState() {
+        assertThat(taskState.ftp(true)).isInstanceOf(TaskStateReady.class);
+        assertThat(taskState.ftp(false)).isInstanceOf(TaskStateFail.class);
     }
 
     @Test

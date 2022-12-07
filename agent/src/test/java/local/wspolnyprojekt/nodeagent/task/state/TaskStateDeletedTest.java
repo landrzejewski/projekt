@@ -1,42 +1,47 @@
-package local.wspolnyproject.nodeagent.task.state;
+package local.wspolnyprojekt.nodeagent.task.state;
 
-import local.wspolnyprojekt.nodeagent.task.state.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_NULL;
+import static local.wspolnyprojekt.nodeagentlib.dto.TaskStatus.TASK_STATUS_DELETED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class TaskStateNullTest {
+class TaskStateDeletedTest {
     private TaskState taskState;
 
     @BeforeEach
     void init() {
-        taskState = new TaskStateNull();
+        taskState = new TaskStateDeleted();
     }
 
     @Test
-    void shouldGiveNullDtoStatus() {
-        assertThat(taskState.getDtoTaskStatus()).isEqualTo(TASK_STATUS_NULL);
+    void shouldGiveDeletedDtoStatus() {
+        assertThat(taskState.getDtoTaskStatus()).isEqualTo(TASK_STATUS_DELETED);
     }
 
     @Test
-    void shouldFtpGiveReadyOrNullTaskState() {
-        assertThat(taskState.ftp(true)).isInstanceOf(TaskStateReady.class);
-        assertThat(taskState.ftp(false)).isInstanceOf(TaskStateNull.class);
+    void shouldDeleteGiveDeletedOrNullState() {
+        assertThat(taskState.delete(true)).isInstanceOf(TaskStateNull.class);
+        assertThat(taskState.delete(false)).isInstanceOf(TaskStateDeleted.class);
     }
 
     @Test
-    void shouldGitCloneGiveAllocatedOrNullTaskState() {
-        assertThat(taskState.gitClone(true)).isInstanceOf(TaskStateAllocated.class);
-        assertThat(taskState.gitClone(false)).isInstanceOf(TaskStateNull.class);
+    void shouldFtpThrowIllegalStateException() {
+        assertThatThrownBy(() -> taskState.ftp(true)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> taskState.ftp(false)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
-    void shouldDownloadedThrowIllegalStateException() {
+    void shouldGitResqurcesThrowIllegalStateException() {
         assertThatThrownBy(() -> taskState.downloaded(true)).isInstanceOf(IllegalStateException.class);
         assertThatThrownBy(() -> taskState.downloaded(false)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void shouldGitCloneThrowIllegalStateException() {
+        assertThatThrownBy(() -> taskState.gitClone(true)).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> taskState.gitClone(false)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -55,12 +60,6 @@ class TaskStateNullTest {
     void shouldStopThrowIllegalStateException() {
         assertThatThrownBy(() -> taskState.stop(true)).isInstanceOf(IllegalStateException.class);
         assertThatThrownBy(() -> taskState.stop(false)).isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void shouldDeleteThrowIllegalStateException() {
-        assertThatThrownBy(() -> taskState.delete(true)).isInstanceOf(IllegalStateException.class);
-        assertThatThrownBy(() -> taskState.delete(false)).isInstanceOf(IllegalStateException.class);
     }
 
     @Test

@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=admin
       - PGDATA=/var/lib/postgresql/data/application
     volumes:
-      - pgdata:/var/lib/postgresql/data/application
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
   pgdata:

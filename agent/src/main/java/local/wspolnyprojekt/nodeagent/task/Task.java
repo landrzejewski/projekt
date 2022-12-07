@@ -6,6 +6,7 @@ import local.wspolnyprojekt.nodeagent.task.state.TaskStateNull;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
 import java.io.File;
 import java.util.concurrent.Semaphore;
 
@@ -44,11 +45,12 @@ public class Task {
 
     public void setStatus(TaskState status, String description) {
         this.status = status;
-        statusBroadcaster.broadcastStatusChange(this, description);
+        if (statusBroadcaster != null)
+            statusBroadcaster.broadcastStatusChange(this, description);
     }
 
     public void setStatus(TaskState status) {
-        setStatus(status,"");
+        setStatus(status, "");
     }
 
- }
+}

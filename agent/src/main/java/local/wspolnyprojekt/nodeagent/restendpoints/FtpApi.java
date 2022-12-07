@@ -1,13 +1,11 @@
 package local.wspolnyprojekt.nodeagent.restendpoints;
 
-import local.wspolnyprojekt.nodeagent.task.Task;
 import local.wspolnyprojekt.nodeagent.task.TasksService;
 import local.wspolnyprojekt.nodeagent.task.state.TaskStateReady;
 import local.wspolnyprojekt.nodeagentlib.dto.RestEndpoints;
 import local.wspolnyprojekt.nodeagent.workspaceutils.WorkspaceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -32,19 +30,16 @@ public class FtpApi {
 
     @PostMapping(value = RestEndpoints.FTP_ENDPOINT)
     void postFile(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid, @PathVariable(name = FILENAME_PATH_VARIABLE) String filename, InputStream inputStream) throws IOException {
-        if(!tasksService.hasTask(taskid)) {
+        if (!tasksService.hasTask(taskid)) {
             tasksService.addTask(taskid);
         }
-        try (inputStream; FileOutputStream outputStream = workspaceUtils.getFileAsFileOutputStream(taskid, filename)) {
-            IOUtils.copy(inputStream, outputStream);
-            tasksService.getTask(taskid).setStatus(new TaskStateReady());
-        }
+        workspaceUtils.saveInputStreamToWorkspace(taskid, inputStream, filename);
+        tasksService.getTask(taskid).setStatus(new TaskStateReady());
     }
 
     @DeleteMapping(RestEndpoints.FTP_ENDPOINT)
     void deleteFile(@PathVariable(name = TASKID_PATH_VARIABLE) String taskid, @PathVariable(name = FILENAME_PATH_VARIABLE) String filename) throws IOException {
-        File file = workspaceUtils.getFileInWorkspaceAsFile(taskid, filename);
-        if (!file.delete()) {
+        if (!workspaceUtils.deleteFileInTaskWorkspace(taskid, filename)) {
             throw new IOException("Can't delete " + filename);
         }
     }

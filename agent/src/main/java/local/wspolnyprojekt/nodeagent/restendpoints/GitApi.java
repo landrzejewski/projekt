@@ -24,11 +24,13 @@ public class GitApi {
 
     @PostMapping(RestEndpoints.GIT_CREDENTIALS_ENDPOINT)
     void setCredentials(@RequestBody GitCredentials gitCredentials) {
+        log.info("GitCredentials: {}", gitCredentials);
         gitClient.setCredentials(gitCredentials);
     }
 
     @PostMapping(RestEndpoints.GIT_ENDPOINT)
     void cloneGitRepository(@RequestBody GitResource gitResource, @PathVariable(name = TASKID_PATH_VARIABLE) String taskid) {
+        log.info("GitClone: {}", gitResource);
         tasksService.clone(gitResource, taskid);
     }
 

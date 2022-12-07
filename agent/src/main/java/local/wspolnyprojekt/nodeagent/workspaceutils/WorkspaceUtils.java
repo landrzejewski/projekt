@@ -3,6 +3,7 @@ package local.wspolnyprojekt.nodeagent.workspaceutils;
 import local.wspolnyprojekt.nodeagent.configuration.NodeConfigurationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.ApplicationScope;
@@ -24,8 +25,8 @@ public class WorkspaceUtils {
         return new File(getWorkspaceDirAsString(taskid));
     }
 
-    private String getWorkspaceDirAsString(String taskid) {
-        return nodeConfigurationProperties.getWorkspaceDirectory() + File.separator + taskid + File.separator;
+    public File getWorkspaceDirAsFile() {
+        return getWorkspaceDirAsFile(null);
     }
 
     public File getFileInWorkspaceAsFile(String taskid, String filename) {
@@ -45,6 +46,7 @@ public class WorkspaceUtils {
 
     /**
      * Usuwanie workspace taska (wszystkie pliki)
+     *
      * @param taskId - identyfikator taska
      * @return - false jeśli nie dało się czegoś usunąć i jakieś "śmieci" pozostały na dysku
      */
@@ -52,6 +54,23 @@ public class WorkspaceUtils {
         return deleteDirectory(getWorkspaceDirAsFile(taskId));
     }
 
+    public boolean deleteFileInTaskWorkspace(String taskId, String filename) {
+        File file = getFileInWorkspaceAsFile(taskId, filename);
+        return file.delete();
+    }
+
+    public void saveInputStreamToWorkspace(String taskid, InputStream inputStream, String filename) throws IOException {
+        try (inputStream; FileOutputStream outputStream = getFileAsFileOutputStream(taskid, filename)) {
+            IOUtils.copy(inputStream, outputStream);
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    private String getWorkspaceDirAsString(String taskid) {
+        return nodeConfigurationProperties.getWorkspaceDirectory()
+                + (taskid == null ? "" : File.separator + taskid + File.separator);
+    }
 
     private boolean deleteDirectory(File directory) {
         try {

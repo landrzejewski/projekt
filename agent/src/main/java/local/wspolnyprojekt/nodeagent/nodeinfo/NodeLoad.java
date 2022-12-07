@@ -10,7 +10,6 @@ import org.springframework.web.context.annotation.ApplicationScope;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
-
 @Service
 @ApplicationScope
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class NodeLoad {
 
     public local.wspolnyprojekt.nodeagentlib.dto.NodeLoad getLoadData() {
         local.wspolnyprojekt.nodeagentlib.dto.NodeLoad nodeLoad = new local.wspolnyprojekt.nodeagentlib.dto.NodeLoad();
-        File workspace = workspaceUtils.getWorkspaceDirAsFile("");
+        File workspace = workspaceUtils.getWorkspaceDirAsFile();
         var sysinfo = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
         nodeLoad.setTotalMemorySize(sysinfo.getTotalMemorySize());
         nodeLoad.setFreeMemorySize(sysinfo.getFreeMemorySize());

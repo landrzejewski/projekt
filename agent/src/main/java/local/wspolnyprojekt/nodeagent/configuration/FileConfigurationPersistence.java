@@ -21,9 +21,9 @@ public class FileConfigurationPersistence implements ConfigurationPersistence {
     @Override
     public void save(String key, String value) {
         synchronized (configurationFile) {
-            configurationProperties.put(key,value);
-            try(FileOutputStream fileOutputStream = new FileOutputStream(configurationFile)) {
-                configurationProperties.store(fileOutputStream,"Agent persistence");
+            configurationProperties.put(key, value);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(configurationFile)) {
+                configurationProperties.store(fileOutputStream, "Agent persistence");
             } catch (FileNotFoundException e) {
                 // TODO
             } catch (IOException e) {
@@ -43,7 +43,7 @@ public class FileConfigurationPersistence implements ConfigurationPersistence {
         configurationProperties = new Properties();
         try {
             new File(nodeConfigurationProperties.getWorkspaceDirectory()).mkdirs(); // Utworzenie folderu workspace jeśli nie istnieje
-            if(!configurationFile.createNewFile()) {
+            if (!configurationFile.createNewFile()) {
                 try (FileInputStream inputStream = new FileInputStream(configurationFile)) {
                     configurationProperties.load(inputStream);
                 } catch (FileNotFoundException e) {

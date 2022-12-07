@@ -44,4 +44,11 @@ public class NodeConfigurationProperties {
         return environment.getProperty("agent.configuration.id.key", "agent.id");
     }
 
+    public boolean getTaskAutorun() {
+        return switch (environment.getProperty("agent.task.autorun", "false")) {
+            case "true" -> true;
+            default -> false;
+        };
+    }
+
 }

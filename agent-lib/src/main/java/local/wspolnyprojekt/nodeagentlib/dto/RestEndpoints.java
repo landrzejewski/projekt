@@ -21,7 +21,4 @@ public class RestEndpoints {
 
     public static final String SYSTEM_PING = "/system/ping";
 
-    // TODO Na razie proteza dla jeszcze nie zaimplementowanych funkcjonalności, docelowo
-    // nie będzie możliwości zdalnego wykonywania dowolnego polecenia
-    public static final String EXECUTE_SHELL_COMMAND_IN_WORKSPACE = "/{" + TASKID_PATH_VARIABLE + "}/execute";
 }
