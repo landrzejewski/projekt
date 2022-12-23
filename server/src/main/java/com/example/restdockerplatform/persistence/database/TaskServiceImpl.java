@@ -50,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
         Task taskToUpdate =
                 taskRepository
                         .findById(taskId)
-                        .get();
+                        .get(); // todo niebezpieczne, trzeba sprawdzić czy jest wartość
         if (Objects.nonNull(taskStatus))
             taskToUpdate.setStatus(taskStatus);
         return taskRepository.save(taskToUpdate);

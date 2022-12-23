@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// todo architektura, podział na pakiety i moduły z publicznymi kontraktami
 @RestController
 public class TaskController {
 
 
+    // todo wstrzykiwanie pod pole
     @Autowired
     private TaskService taskService;
 

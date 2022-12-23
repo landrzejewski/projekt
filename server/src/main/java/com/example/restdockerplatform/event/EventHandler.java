@@ -38,6 +38,7 @@ public class EventHandler {
             // unzip zip file in proper place
             fileService.unzipFile(event.getUser(), event.getProject());
         } catch (UnZipException ex) {
+            // todo warto się zastanowić nad określeniem przyczyny błędu (może dodać jakiś komunikat)
             processRepository.setStatus(userTask, UploadStatus.ERROR);
 
         }

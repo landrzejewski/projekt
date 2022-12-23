@@ -68,6 +68,7 @@ public class FileService {
             return new UrlResource(foundFile.toUri());
         }
 
+        // todo zamiast null zwrócić Optional<Resource>
         return null;
     }
 

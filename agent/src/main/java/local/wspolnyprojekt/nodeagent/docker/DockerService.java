@@ -42,6 +42,7 @@ public class DockerService {
             }
         } else {
             log.error("{} BUSY", task.getTaskId());
+            // todo stworzyć dedykowany wyjątek adekwatny do sytuacji i warstwy
             throw new RuntimeException("BUSY"); //TODO Co ma dostawać serwer jeśli zadanie działa a pójdzie polecenie ponownego uruchomienia?
         }
     }
